@@ -1,0 +1,23 @@
+{
+  "lang": "R",
+  "R": "4.3.3",
+  "packages": {
+    "sf": null,
+    "terra": "1.9.50",
+    "gdalraster": "2.7.0",
+    "vapour": "0.16.0",
+    "wk": "0.9.5",
+    "ximage": "0.1.0"
+  },
+  "sf_ext": "failed: there is no package called 'sf'",
+  "terra_gdal": "3.8.4",
+  "terra": {
+    "seconds": 6.69,
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 73,
+    "max": 1425.759,
+    "mean": 558.9181
+  },
+  "libs": ["/usr/lib/x86_64-linux-gnu/libgdal.so.34.3.8.4", "/usr/lib/x86_64-linux-gnu/libgeos.so.3.12.1", "/usr/lib/x86_64-linux-gnu/libgeos_c.so.1.18.1", "/usr/lib/x86_64-linux-gnu/libproj.so.25.9.4.0"]
+}

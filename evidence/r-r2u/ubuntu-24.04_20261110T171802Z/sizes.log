@@ -1,0 +1,4 @@
+r_base_installed_bytes 166300672
+packages_installed_bytes 206247936  (R packages + system libs via apt)
+rlib_files 2011
+debs_r_cran 31

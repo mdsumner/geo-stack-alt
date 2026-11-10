@@ -1,0 +1,9 @@
+step	seconds	exit
+apt_r	130.2	0
+install_naive	86.6	0
+binaries_check	0.0	1
+apt_runtime	18.2	0
+install_runtime	19.2	0
+probe_r	13.2	0
+probe_terra	10.2	0
+sizes	0.0	0

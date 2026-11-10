@@ -1,0 +1,214 @@
+Installing packages into '/usr/local/lib/R/site-library'
+(as 'lib' is unspecified)
+also installing the dependencies 'proxy', 'e1071', 'bit', 'rlang', 'glue', 'lifecycle', 'magrittr', 'stringi', 'vctrs', 'classInt', 'DBI', 's2', 'units', 'Rcpp', 'bit64', 'cli', 'nanoarrow', 'xml2', 'yyjsonr', 'RcppInt64', 'stringr', 'cpp11'
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/proxy_0.4-29.tar.gz'
+Content type 'binary/octet-stream' length 170206 bytes (166 KB)
+==================================================
+downloaded 166 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/e1071_1.7-17.tar.gz'
+Content type 'binary/octet-stream' length 581295 bytes (567 KB)
+==================================================
+downloaded 567 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/bit_4.6.0.tar.gz'
+Content type 'binary/octet-stream' length 616329 bytes (601 KB)
+==================================================
+downloaded 601 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/rlang_1.3.0.tar.gz'
+Content type 'binary/octet-stream' length 1569499 bytes (1.5 MB)
+==================================================
+downloaded 1.5 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/glue_1.8.1.tar.gz'
+Content type 'binary/octet-stream' length 170281 bytes (166 KB)
+==================================================
+downloaded 166 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/lifecycle_1.0.5.tar.gz'
+Content type 'binary/octet-stream' length 130253 bytes (127 KB)
+==================================================
+downloaded 127 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/magrittr_2.0.5.tar.gz'
+Content type 'binary/octet-stream' length 219149 bytes (214 KB)
+==================================================
+downloaded 214 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/stringi_1.8.9.tar.gz'
+Content type 'binary/octet-stream' length 3270574 bytes (3.1 MB)
+==================================================
+downloaded 3.1 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/vctrs_0.7.3.tar.gz'
+Content type 'binary/octet-stream' length 1830917 bytes (1.7 MB)
+==================================================
+downloaded 1.7 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/classInt_0.4-11.tar.gz'
+Content type 'binary/octet-stream' length 495462 bytes (483 KB)
+==================================================
+downloaded 483 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/DBI_1.3.0.tar.gz'
+Content type 'binary/octet-stream' length 916968 bytes (895 KB)
+==================================================
+downloaded 895 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/s2_1.1.13.tar.gz'
+Content type 'binary/octet-stream' length 2207417 bytes (2.1 MB)
+==================================================
+downloaded 2.1 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/units_1.0-1.tar.gz'
+Content type 'binary/octet-stream' length 482253 bytes (470 KB)
+==================================================
+downloaded 470 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/Rcpp_1.1.2.tar.gz'
+Content type 'binary/octet-stream' length 2211787 bytes (2.1 MB)
+==================================================
+downloaded 2.1 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/bit64_4.8.6.tar.gz'
+Content type 'binary/octet-stream' length 548487 bytes (535 KB)
+==================================================
+downloaded 535 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/cli_3.6.6.tar.gz'
+Content type 'binary/octet-stream' length 1318364 bytes (1.3 MB)
+==================================================
+downloaded 1.3 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/nanoarrow_0.9.0.tar.gz'
+Content type 'binary/octet-stream' length 697305 bytes (680 KB)
+==================================================
+downloaded 680 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/xml2_1.6.0.tar.gz'
+Content type 'binary/octet-stream' length 277018 bytes (270 KB)
+==================================================
+downloaded 270 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/yyjsonr_0.1.22.tar.gz'
+Content type 'binary/octet-stream' length 1205059 bytes (1.1 MB)
+==================================================
+downloaded 1.1 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/RcppInt64_0.0.5.tar.gz'
+Content type 'binary/octet-stream' length 51848 bytes (50 KB)
+==================================================
+downloaded 50 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/stringr_1.6.0.tar.gz'
+Content type 'binary/octet-stream' length 329229 bytes (321 KB)
+==================================================
+downloaded 321 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/cpp11_0.5.5.tar.gz'
+Content type 'binary/octet-stream' length 302434 bytes (295 KB)
+==================================================
+downloaded 295 KB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/sf_1.1-3.tar.gz'
+Content type 'binary/octet-stream' length 9542493 bytes (9.1 MB)
+==================================================
+downloaded 9.1 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/terra_1.9-50.tar.gz'
+Content type 'binary/octet-stream' length 5863093 bytes (5.6 MB)
+==================================================
+downloaded 5.6 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/gdalraster_2.7.0.tar.gz'
+Content type 'binary/octet-stream' length 4147382 bytes (4.0 MB)
+==================================================
+downloaded 4.0 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/vapour_0.16.0.tar.gz'
+Content type 'binary/octet-stream' length 1986069 bytes (1.9 MB)
+==================================================
+downloaded 1.9 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/wk_0.9.5.tar.gz'
+Content type 'binary/octet-stream' length 1719874 bytes (1.6 MB)
+==================================================
+downloaded 1.6 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/ximage_0.1.0.tar.gz'
+Content type 'binary/octet-stream' length 1707904 bytes (1.6 MB)
+==================================================
+downloaded 1.6 MB
+
+trying URL 'https://packagemanager.posit.co/cran/__linux__/noble/latest/src/contrib/jsonlite_2.0.0.tar.gz'
+Content type 'binary/octet-stream' length 1088812 bytes (1.0 MB)
+==================================================
+downloaded 1.0 MB
+
+* installing *binary* package 'proxy' ...
+* DONE (proxy)
+* installing *binary* package 'bit' ...
+* DONE (bit)
+* installing *binary* package 'rlang' ...
+* DONE (rlang)
+* installing *binary* package 'glue' ...
+* DONE (glue)
+* installing *binary* package 'magrittr' ...
+* DONE (magrittr)
+* installing *binary* package 'stringi' ...
+* DONE (stringi)
+* installing *binary* package 'DBI' ...
+* DONE (DBI)
+* installing *binary* package 'Rcpp' ...
+* DONE (Rcpp)
+* installing *binary* package 'cli' ...
+* DONE (cli)
+* installing *binary* package 'nanoarrow' ...
+* DONE (nanoarrow)
+* installing *binary* package 'yyjsonr' ...
+* DONE (yyjsonr)
+* installing *binary* package 'cpp11' ...
+* DONE (cpp11)
+* installing *binary* package 'wk' ...
+* DONE (wk)
+* installing *binary* package 'ximage' ...
+* DONE (ximage)
+* installing *binary* package 'jsonlite' ...
+* DONE (jsonlite)
+* installing *binary* package 'e1071' ...
+* DONE (e1071)
+* installing *binary* package 'lifecycle' ...
+* DONE (lifecycle)
+* installing *binary* package 's2' ...
+* DONE (s2)
+* installing *binary* package 'units' ...
+* DONE (units)
+* installing *binary* package 'bit64' ...
+* DONE (bit64)
+* installing *binary* package 'xml2' ...
+* DONE (xml2)
+* installing *binary* package 'RcppInt64' ...
+* DONE (RcppInt64)
+* installing *binary* package 'terra' ...
+* DONE (terra)
+* installing *binary* package 'vctrs' ...
+* DONE (vctrs)
+* installing *binary* package 'classInt' ...
+* DONE (classInt)
+* installing *binary* package 'gdalraster' ...
+* DONE (gdalraster)
+* installing *binary* package 'stringr' ...
+* DONE (stringr)
+* installing *binary* package 'sf' ...
+* DONE (sf)
+* installing *binary* package 'vapour' ...
+* DONE (vapour)
+
+The downloaded source packages are in
+	'/tmp/RtmpT0jXHa/downloaded_packages'
+        sf      terra gdalraster     vapour         wk     ximage   jsonlite 
+     FALSE      FALSE      FALSE      FALSE       TRUE       TRUE       TRUE 
+LOADED 3 of 7 
+MISSING sf terra gdalraster vapour 

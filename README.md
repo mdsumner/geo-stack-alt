@@ -70,6 +70,36 @@ What this says:
   env, rasterio 1.5.2 and pyogrio load the env's single libgdal 3.13.3. The duplicate is
   caused by wheels, not by rasterio.
 
+### The R side: three default paths against pixi
+
+The newcomer installs `sf terra gdalraster vapour wk ximage jsonlite` on a bare `ubuntu:24.04`
+with `install.packages()` (arms `r-source`, `r-p3m`, `r-r2u`). Arm B is the pixi env above.
+
+| | A-R source (CRAN) | A-R P3M binaries | A-R r2u | B pixi |
+|---|---|---|---|---|
+| Setup | `apt install r-base` (130-254 s, pulls compilers) | same, plus a repo URL and an `HTTPUserAgent` option | r2u script: CRAN apt repo, bspm (59 s) | pixi (shared with Python) |
+| First `install.packages()` | 87-253 s; **3 of 7 load**: sf, terra, gdalraster, vapour fail (no system libraries) | **3 of 7 load**: binaries install without error, then won't load (no libgdal etc.) | **7 of 7** in 36 s | 7 of 7 |
+| Fix | 8 `-dev` packages (sf README set + ssl/curl/xml2), then 535 s compiling: **6 of 7**. sf still fails: s2 needs Abseil (`libabsl-dev`) or cmake, which the usual list omits | 4 runtime libraries from apt, then 19 s: 7 of 7 | none | none |
+| R | 4.3.3 | 4.3.3 | 4.6.2 | 4.5.3 |
+| GDAL / PROJ / GEOS | 3.8.4 / 9.4.0 / 3.12.1 (Ubuntu) | same | same | 3.13.3 / 9.9.0 / 3.15.0 |
+| One libgdal for every package | yes | yes | yes | yes, **and shared with Python** |
+| DEM warp, gdalraster and vapour | 558.9196 | 558.9196 | 558.9196 | 558.9198 |
+| DEM warp, `terra::project` | 558.9181 | 558.9181 | 558.9181 | not run |
+
+What this says:
+
+- On Linux, R already has the "one GDAL" property: every package links the system libgdal.
+  R's problems are the setup cliff (two of three default paths fail first, silently in P3M's
+  case) and the **age** of Ubuntu's GDAL (3.8.4, released February 2024).
+- **r2u is the strongest R default on Ubuntu:** one script, then binaries for everything,
+  with system libraries pulled in by apt. It's limited to Ubuntu LTS and to the distro's
+  GDAL. It also suggests an all-apt arm: r2u plus `python3-gdal` would share one (old) libgdal
+  across both languages. Untested.
+- `terra::project` gives a different answer from `gdal.Warp`, gdalraster and vapour **on the
+  same GDAL** (mean 558.9181 against 558.9196; min and max agree). Not yet explained.
+- The source path's documented system-requirements list is out of date for sf, because of s2
+  and Abseil. A newcomer following it ends up with no sf.
+
 ### The two means differ, and that is the point
 
 The 0.0002 gap is not a binding difference. GDAL 3.13 changed bilinear/cubic warping for
@@ -153,6 +183,7 @@ IMAGE=ubuntu:22.04 bash cleanroom/run.sh pixi   # another base image
 VARIANT=min bash cleanroom/run.sh pixi-py       # Python only (default packages in the script)
 VARIANT=like PIXI_PKGS="python numpy gdal libgdal matplotlib-base rasterio geopandas" \
   bash cleanroom/run.sh pixi-py
+bash cleanroom/run.sh r-r2u                     # R via r2u (also r-p3m, r-source)
 bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
 ```
 
@@ -175,7 +206,7 @@ bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
 
 ## Next
 
-- Arm A with R the way a newcomer gets it (apt r-base, then sf/terra), for the R half of the
-  comparison.
+- Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
+- An all-apt arm: r2u plus `python3-gdal`.
 - Port a real workload from rasterio to osgeo.gdal and compare it with the R version.
 - Run the same arms on Nectar, Setonix and a laptop.

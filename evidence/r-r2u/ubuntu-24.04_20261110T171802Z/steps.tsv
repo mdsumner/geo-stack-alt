@@ -1,0 +1,6 @@
+step	seconds	exit
+apt	18.1	0
+r2u_setup	59.3	0
+install	35.9	0
+probe_r	15.6	0
+probe_terra	9.3	0

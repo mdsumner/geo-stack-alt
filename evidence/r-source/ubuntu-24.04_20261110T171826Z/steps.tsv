@@ -1,0 +1,8 @@
+step	seconds	exit
+apt_r	254.3	0
+install_naive	253.0	0
+apt_dev	41.8	0
+install_dev	534.6	0
+probe_r	13.0	0
+probe_terra	9.8	0
+sizes	0.2	0
