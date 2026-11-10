@@ -1,0 +1,9 @@
+step	seconds	exit
+apt	76.5	0
+r2u_setup	38.9	0
+r_install	15.8	0
+burst	3.0	0
+mosaic	18.9	0
+figure_py	2.1	0
+figure_r	5.1	0
+stats_compare	0.0	0

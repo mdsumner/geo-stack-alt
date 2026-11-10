@@ -1,0 +1,55 @@
+code for methods in class "Rcpp_CmbTable" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_CmbTable" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALAlg" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALAlg" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALRaster" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALRaster" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALVector" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALVector" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_RunningStats" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_RunningStats" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_VSIFile" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_VSIFile" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+GDAL 3.8.4 (released 2024-02-08), GEOS 3.12.1, PROJ 9.4.0
+null device 
+          1 
+null device 
+          1 
+{
+  "vh_apr_oct": {
+    "n": 90228,
+    "p01": -1.475757,
+    "median": 0.630889,
+    "p99": 5.371914,
+    "sd": 1.259976,
+    "frac_lt_minus3": 0.003004,
+    "frac_gt_plus3": 0.059061
+  },
+  "vv_apr_oct": {
+    "n": 90228,
+    "p01": -1.431675,
+    "median": 0.785098,
+    "p99": 4.2282,
+    "sd": 1.112106,
+    "frac_lt_minus3": 0.003103,
+    "frac_gt_plus3": 0.04318
+  },
+  "vh_sep_oct": {
+    "n": 150453,
+    "p01": -3.437576,
+    "median": -0.917315,
+    "p99": 1.193233,
+    "sd": 1.131236,
+    "frac_lt_minus3": 0.019893,
+    "frac_gt_plus3": 0.000053
+  },
+  "vv_sep_oct": {
+    "n": 150453,
+    "p01": -2.961162,
+    "median": -0.786812,
+    "p99": 1.075014,
+    "sd": 0.981123,
+    "frac_lt_minus3": 0.009365,
+    "frac_gt_plus3": 0.003642
+  }
+} 
