@@ -1,0 +1,102 @@
+Using Python 3.12.3 environment at: /work/venv
+Resolved 1 package in 295ms
+   Building gdal==3.13.3
+error: Failed to build `gdal==3.13.3`
+  cause: The build backend returned an error
+  cause: Call to `setuptools.build_meta.get_requires_for_build_wheel` failed (exit status: 1)
+
+         [stdout]
+         Using numpy 2.5.4
+         running egg_info
+         writing gdal-utils/GDAL.egg-info/PKG-INFO
+         writing dependency_links to gdal-utils/GDAL.egg-info/dependency_links.txt
+         writing entry points to gdal-utils/GDAL.egg-info/entry_points.txt
+         writing requirements to gdal-utils/GDAL.egg-info/requires.txt
+         writing top-level names to gdal-utils/GDAL.egg-info/top_level.txt
+
+         [stderr]
+         /root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `license` overwritten by `pyproject.toml`
+           corresp(dist, value, root_dir)
+         /root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `extras_require` overwritten in `pyproject.toml` (optional-dependencies)
+           corresp(dist, value, root_dir)
+         Traceback (most recent call last):
+           File "<string>", line 92, in fetch_config
+           File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+             self._execute_child(args, executable, preexec_fn, close_fds,
+           File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+             raise child_exception_type(errno_num, err_msg, err_filename)
+         FileNotFoundError: [Errno 2] No such file or directory: 'gdal-config'
+
+         During handling of the above exception, another exception occurred:
+
+         Traceback (most recent call last):
+           File "<string>", line 244, in get_gdal_config
+           File "<string>", line 95, in fetch_config
+         gdal_config_error: [Errno 2] No such file or directory: 'gdal-config'
+
+         During handling of the above exception, another exception occurred:
+
+         Traceback (most recent call last):
+           File "<string>", line 14, in <module>
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/build_meta.py", line 333, in get_requires_for_build_wheel
+             return self._get_build_requires(config_settings, requirements=[])
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
+             self.run_setup()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/build_meta.py", line 317, in run_setup
+             exec(code, locals())  # noqa: S102 # exec is intentional here
+             ^^^^^^^^^^^^^^^^^^^^
+           File "<string>", line 470, in <module>
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/__init__.py", line 117, in setup
+             return distutils.core.setup(**attrs)  # type: ignore[return-value]
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/core.py", line 168, in setup
+             return run_commands(dist)
+                    ^^^^^^^^^^^^^^^^^^
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/core.py", line 184, in run_commands
+             dist.run_commands()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/dist.py", line 1028, in run_commands
+             self.run_command(cmd)
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/dist.py", line 1106, in run_command
+             super().run_command(command)
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/dist.py", line 1047, in run_command
+             cmd_obj.run()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 342, in run
+             self.find_sources()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 350, in find_sources
+             mm.run()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 572, in run
+             self.add_defaults()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 610, in add_defaults
+             sdist.add_defaults(self)
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/command/sdist.py", line 113, in add_defaults
+             super().add_defaults()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/command/sdist.py", line 256, in add_defaults
+             self._add_defaults_ext()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/command/sdist.py", line 340, in _add_defaults_ext
+             build_ext = self.get_finalized_command('build_ext')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/cmd.py", line 319, in get_finalized_command
+             cmd_obj.ensure_finalized()
+           File "/root/.cache/uv/builds-v0/.tmpu59BT1/lib/python3.12/site-packages/setuptools/_distutils/cmd.py", line 119, in ensure_finalized
+             self.finalize_options()
+           File "<string>", line 332, in finalize_options
+           File "<string>", line 250, in get_gdal_config
+         gdal_config_error: Traceback (most recent call last):
+           File "<string>", line 92, in fetch_config
+           File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+             self._execute_child(args, executable, preexec_fn, close_fds,
+           File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+             raise child_exception_type(errno_num, err_msg, err_filename)
+         FileNotFoundError: [Errno 2] No such file or directory: 'gdal-config'
+
+         During handling of the above exception, another exception occurred:
+
+         Traceback (most recent call last):
+           File "<string>", line 244, in get_gdal_config
+           File "<string>", line 95, in fetch_config
+         gdal_config_error: [Errno 2] No such file or directory: 'gdal-config'
+
+         Could not find gdal-config. Make sure you have installed the GDAL native library and development headers.
+
+hint: Build failures usually indicate a problem with the package or the build environment

@@ -1,0 +1,119 @@
+Collecting gdal
+  Downloading gdal-3.13.3.tar.gz (940 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 940.6/940.6 kB 7.3 MB/s eta 0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'error'
+  error: subprocess-exited-with-error
+  
+  × Getting requirements to build wheel did not run successfully.
+  │ exit code: 1
+  ╰─> [97 lines of output]
+      /tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `license` overwritten by `pyproject.toml`
+        corresp(dist, value, root_dir)
+      /tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `extras_require` overwritten in `pyproject.toml` (optional-dependencies)
+        corresp(dist, value, root_dir)
+      Using numpy 2.5.4
+      running egg_info
+      writing gdal-utils/GDAL.egg-info/PKG-INFO
+      writing dependency_links to gdal-utils/GDAL.egg-info/dependency_links.txt
+      writing entry points to gdal-utils/GDAL.egg-info/entry_points.txt
+      writing requirements to gdal-utils/GDAL.egg-info/requires.txt
+      writing top-level names to gdal-utils/GDAL.egg-info/top_level.txt
+      Traceback (most recent call last):
+        File "<string>", line 92, in fetch_config
+        File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+          self._execute_child(args, executable, preexec_fn, close_fds,
+        File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+          raise child_exception_type(errno_num, err_msg, err_filename)
+      FileNotFoundError: [Errno 2] No such file or directory: 'gdal-config'
+      
+      During handling of the above exception, another exception occurred:
+      
+      Traceback (most recent call last):
+        File "<string>", line 244, in get_gdal_config
+        File "<string>", line 95, in fetch_config
+      gdal_config_error: [Errno 2] No such file or directory: 'gdal-config'
+      
+      During handling of the above exception, another exception occurred:
+      
+      Traceback (most recent call last):
+        File "/work/venv/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 353, in <module>
+          main()
+        File "/work/venv/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 335, in main
+          json_out['return_val'] = hook(**hook_input['kwargs'])
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/work/venv/lib/python3.12/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 118, in get_requires_for_build_wheel
+          return hook(config_settings)
+                 ^^^^^^^^^^^^^^^^^^^^^
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/build_meta.py", line 333, in get_requires_for_build_wheel
+          return self._get_build_requires(config_settings, requirements=[])
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
+          self.run_setup()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/build_meta.py", line 317, in run_setup
+          exec(code, locals())  # noqa: S102 # exec is intentional here
+          ^^^^^^^^^^^^^^^^^^^^
+        File "<string>", line 470, in <module>
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/__init__.py", line 117, in setup
+          return distutils.core.setup(**attrs)  # type: ignore[return-value]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/core.py", line 168, in setup
+          return run_commands(dist)
+                 ^^^^^^^^^^^^^^^^^^
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/core.py", line 184, in run_commands
+          dist.run_commands()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/dist.py", line 1028, in run_commands
+          self.run_command(cmd)
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/dist.py", line 1106, in run_command
+          super().run_command(command)
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/dist.py", line 1047, in run_command
+          cmd_obj.run()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 342, in run
+          self.find_sources()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 350, in find_sources
+          mm.run()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 572, in run
+          self.add_defaults()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/command/egg_info.py", line 610, in add_defaults
+          sdist.add_defaults(self)
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/command/sdist.py", line 113, in add_defaults
+          super().add_defaults()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/command/sdist.py", line 256, in add_defaults
+          self._add_defaults_ext()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/command/sdist.py", line 340, in _add_defaults_ext
+          build_ext = self.get_finalized_command('build_ext')
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/cmd.py", line 319, in get_finalized_command
+          cmd_obj.ensure_finalized()
+        File "/tmp/pip-build-env-s0pitose/overlay/lib/python3.12/site-packages/setuptools/_distutils/cmd.py", line 119, in ensure_finalized
+          self.finalize_options()
+        File "<string>", line 332, in finalize_options
+        File "<string>", line 250, in get_gdal_config
+      gdal_config_error: Traceback (most recent call last):
+        File "<string>", line 92, in fetch_config
+        File "/usr/lib/python3.12/subprocess.py", line 1026, in __init__
+          self._execute_child(args, executable, preexec_fn, close_fds,
+        File "/usr/lib/python3.12/subprocess.py", line 1955, in _execute_child
+          raise child_exception_type(errno_num, err_msg, err_filename)
+      FileNotFoundError: [Errno 2] No such file or directory: 'gdal-config'
+      
+      During handling of the above exception, another exception occurred:
+      
+      Traceback (most recent call last):
+        File "<string>", line 244, in get_gdal_config
+        File "<string>", line 95, in fetch_config
+      gdal_config_error: [Errno 2] No such file or directory: 'gdal-config'
+      
+      Could not find gdal-config. Make sure you have installed the GDAL native library and development headers.
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+error: subprocess-exited-with-error
+
+× Getting requirements to build wheel did not run successfully.
+│ exit code: 1
+╰─> See above for output.
+
+note: This error originates from a subprocess, and is likely not a problem with pip.
