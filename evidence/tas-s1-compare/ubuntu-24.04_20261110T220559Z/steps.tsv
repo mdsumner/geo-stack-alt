@@ -1,0 +1,11 @@
+step	seconds	exit
+apt	79.5	0
+versions	0.2	0
+index	24.1	0
+burst_rio	3.1	0
+mosaic_rio	19.8	0
+figure_rio	2.1	0
+burst_gdal	2.8	0
+mosaic_gdal	18.8	0
+figure_gdal	1.9	0
+compare	9.4	0
