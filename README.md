@@ -43,6 +43,33 @@ at 40 m (bilinear), plus versions, drivers and the shared libraries loaded in th
 
 Raw logs, timings, lockfiles and probe JSON: [`evidence/`](evidence/).
 
+### Python only, like for like
+
+Same clean image, Python only (`cleanroom/arms/pixi-py.sh`, `VARIANT=` and `PIXI_PKGS=`).
+"Install" excludes the apt step, which varied from 16 s to 124 s with mirror load.
+
+| | A: venv + pip | B-py core | B-py | B-py like-for-like |
+|---|---|---|---|---|
+| Packages | rasterio numpy geopandas matplotlib | python numpy gdal matplotlib-base | + libgdal | + libgdal rasterio geopandas |
+| Install | 22 s (venv + pip) | 5 s | 5 s | 7 s |
+| Env on disk | 534 MB | 626 MB | 934 MB | 1.19 GB |
+| Files in env | 9,296 | 14,147 | 23,173 | 31,657 |
+| Env + download cache | 677 MB | 770 MB | 1.21 GB | 1.50 GB |
+| GDAL drivers | 147 (rasterio) | 191 | 210 | 210 |
+| `osgeo.gdal` | no | yes | yes | yes |
+| libgdal copies in one process | 2 (3.12.2, 3.12.4) | 1 | 1 | **1**: rasterio and pyogrio both on 3.13.3 |
+
+What this says:
+
+- On disk, pip is smaller: 534 MB against 626 MB for core GDAL, or 934 MB with every
+  plugin. The pixi env has 1.5 to 2.5 times as many files, which matters under HPC file-count
+  quotas (to check on Setonix).
+- pixi is faster once apt is done, because it downloads prebuilt packages in parallel and
+  hardlinks them from its cache.
+- **conda-forge also removes the duplicate GDAL for rasterio users.** In the like-for-like
+  env, rasterio 1.5.2 and pyogrio load the env's single libgdal 3.13.3. The duplicate is
+  caused by wheels, not by rasterio.
+
 ### The two means differ, and that is the point
 
 The 0.0002 gap is not a binding difference. GDAL 3.13 changed bilinear/cubic warping for
@@ -67,9 +94,16 @@ What this shows about the stacks:
    fix that.
 3. **Record the GDAL version and resampling method in every output** (GeoTIFF tags or a
    sidecar). Results depend on the GDAL version, as the finding above shows.
-4. On Ubuntu 24.04, plain `pip` outside a venv is refused (PEP 668), and the bare image has no
-   pip at all: arm A has to start with `python3-venv`. (The arm records this, but the step
-   needs `python3-pip` to show the PEP 668 message itself; to fix.)
+4. On Ubuntu 24.04, `pip install` outside a venv fails with `error: externally-managed-environment`
+   (PEP 668), so arm A has to start with `python3-venv`. A desktop install has python3 but
+   neither venv nor pip.
+5. **Use `matplotlib-base`, not `matplotlib`.** On conda-forge, `matplotlib` pulls in Qt6,
+   PySide6, LLVM and Clang (about 150 MB compressed). With it, the Python-only env was 1.7 GB
+   and 36k files; without it, 934 MB.
+6. **`libgdal` costs about 300 MB and 9k files** (191 to 210 drivers). Most of that is TileDB
+   and its cloud SDKs (AWS, Google Cloud, gRPC), plus PostgreSQL, HDF5 and Poppler. If size
+   matters, add only the plugins you need (`libgdal-netcdf`, `libgdal-hdf5`,
+   `libgdal-jp2openjpeg`, ...) on top of `gdal`. That's not yet tested as a set.
 
 A starting `pixi.toml` that matches arm B:
 
@@ -83,6 +117,7 @@ python = "*"
 numpy = "*"
 gdal = "*"
 libgdal = "*"
+matplotlib-base = "*"
 r-base = "*"
 r-gdalraster = "*"
 r-vapour = "*"
@@ -101,6 +136,9 @@ bash cleanroom/run.sh pip                       # arm A
 bash cleanroom/run.sh pixi                      # arm B, gdal only
 PIXI_EXTRA=libgdal bash cleanroom/run.sh pixi   # arm B with all plugins
 IMAGE=ubuntu:22.04 bash cleanroom/run.sh pixi   # another base image
+VARIANT=min bash cleanroom/run.sh pixi-py       # Python only (default packages in the script)
+VARIANT=like PIXI_PKGS="python numpy gdal libgdal matplotlib-base rasterio geopandas" \
+  bash cleanroom/run.sh pixi-py
 bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
 ```
 
@@ -123,10 +161,9 @@ bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
 
 ## Next
 
-- A Python-only pixi arm, for a fair size and time comparison with arm A.
 - `libgdal-arrow-parquet`, and the STAC-GeoParquet index from ga-sar-ice as a test.
 - Arm A with R the way a newcomer gets it (apt r-base, then sf/terra), for the R half of the
   comparison.
-- Fix arm A's PEP 668 step.
+- A trimmed plugin set (gdal + netCDF/HDF5/JP2/Parquet) as the recommended Python env.
 - Port a real workload from rasterio to osgeo.gdal and compare it with the R version.
 - Run the same arms on Nectar, Setonix and a laptop.

@@ -1,0 +1,26 @@
+Collecting setuptools
+  Using cached setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting wheel
+  Using cached wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+Requirement already satisfied: packaging>=24.0 in /work/venv/lib/python3.12/site-packages (from wheel) (26.3)
+Using cached setuptools-84.2.1-py3-none-any.whl (876 kB)
+Using cached wheel-0.48.0-py3-none-any.whl (33 kB)
+Installing collected packages: wheel, setuptools
+Successfully installed setuptools-84.2.1 wheel-0.48.0
+Collecting gdal==3.8.4 (from gdal[numpy]==3.8.4)
+  Downloading GDAL-3.8.4.tar.gz (802 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 802.5/802.5 kB 17.4 MB/s eta 0:00:00
+  Preparing metadata (setup.py): started
+  Preparing metadata (setup.py): finished with status 'done'
+Building wheels for collected packages: gdal
+  Building wheel for gdal (setup.py): started
+  Building wheel for gdal (setup.py): finished with status 'done'
+  Created wheel for gdal: filename=gdal-3.8.4-cp312-cp312-linux_x86_64.whl size=3692777 sha256=73ff7d181c769929b8207fd71578e0f0a5e8b514a70b86e11ea61a261d7d62d9
+  Stored in directory: /tmp/pip-ephem-wheel-cache-3u75pnbo/wheels/06/5d/17/416d1dc0d91e129099405cb0a173ff2cd105745990b903a2d2
+Successfully built gdal
+Installing collected packages: gdal
+  Attempting uninstall: gdal
+    Found existing installation: GDAL 3.8.4
+    Uninstalling GDAL-3.8.4:
+      Successfully uninstalled GDAL-3.8.4
+Successfully installed gdal-3.8.4

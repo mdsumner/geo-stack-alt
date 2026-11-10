@@ -1,0 +1,49 @@
+{
+  "lang": "python",
+  "binding": "osgeo.gdal",
+  "python": "3.15.2",
+  "gdal": "3.13.3",
+  "proj": "9.9.0",
+  "driver_count": 210,
+  "drivers": {
+    "GTiff": true,
+    "COG": true,
+    "VRT": true,
+    "netCDF": true,
+    "HDF5": true,
+    "Zarr": true,
+    "Parquet": false,
+    "GPKG": true,
+    "FlatGeobuf": true,
+    "GeoJSON": true,
+    "ESRI Shapefile": true,
+    "JP2OpenJPEG": true,
+    "KEA": true,
+    "PDF": true,
+    "STACIT": true,
+    "GTI": true,
+    "PostgreSQL": true,
+    "OpenFileGDB": true,
+    "LIBKML": true,
+    "WMS": true,
+    "WMTS": true
+  },
+  "warp_seconds": 5.48,
+  "warp": {
+    "shape": [
+      1000,
+      1000
+    ],
+    "valid": 1000000,
+    "min": 72.837,
+    "max": 1426.728,
+    "mean": 558.9198
+  },
+  "gdal_run": "ok: [3600, 3600]",
+  "libs": [
+    "/work/geo/.pixi/envs/default/lib/libgdal.so.39.3.13.3",
+    "/work/geo/.pixi/envs/default/lib/libgeos.so.3.15.0",
+    "/work/geo/.pixi/envs/default/lib/libgeos_c.so.1.21.0",
+    "/work/geo/.pixi/envs/default/lib/libproj.so.25.9.9.0"
+  ]
+}

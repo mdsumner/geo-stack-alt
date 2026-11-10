@@ -5,14 +5,15 @@ set -uo pipefail
 source /cleanroom/arms/lib.sh
 export PIP_DISABLE_PIP_VERSION_CHECK=1 DEBIAN_FRONTEND=noninteractive
 
-# Desktop Ubuntu has python3 but not venv; the bare image has neither.
-step apt bash -c 'apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 python3-venv curl ca-certificates'
+# Desktop Ubuntu has python3 but not venv or pip; the bare image has none of them.
+step apt bash -c 'apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 python3-venv python3-pip curl ca-certificates'
 # Ubuntu 24.04 refuses a system-wide pip install (PEP 668): record that, it is the first wall.
-step pip_system python3 -m pip install --dry-run rasterio
+step pip_system python3 -m pip install rasterio
 step venv python3 -m venv /work/venv
 export PATH=/work/venv/bin:$PATH
 
 step pip_stack pip install rasterio numpy geopandas matplotlib
+step sizes_pre bash -c 'echo "env_bytes $(du -sb /work/venv | cut -f1)"; echo "env_files $(find /work/venv -type f | wc -l)"; echo "cache_bytes $(du -sb /root/.cache/pip | cut -f1)"; pip list > /out/pip-list.txt'
 step probe_rasterio python /cleanroom/probe/probe_rasterio.py /out/probe_rasterio.json
 
 # --- osgeo.gdal for the newcomer ---------------------------------------------------------
@@ -31,5 +32,6 @@ step probe_gdal_apt python /cleanroom/probe/probe_gdal.py /out/probe_gdal_apt.js
 step pip_gdal_numpy bash -c 'pip install setuptools wheel && pip install --no-build-isolation --no-cache-dir --force-reinstall --no-deps "gdal[numpy]==$(gdal-config --version)"'
 step probe_gdal_apt2 python /cleanroom/probe/probe_gdal.py /out/probe_gdal_apt2.json
 
-step sizes bash -c 'du -sh /work/venv; pip list > /out/pip-list.txt'
-cat /out/sizes.log
+step sizes_post bash -c 'echo "env_bytes $(du -sb /work/venv | cut -f1)"; echo "env_files $(find /work/venv -type f | wc -l)"; echo "cache_bytes $(du -sb /root/.cache/pip | cut -f1)"'
+# (above is measured after the osgeo.gdal attempts too; see sizes_pre for the plain stack)
+cat /out/sizes_pre.log

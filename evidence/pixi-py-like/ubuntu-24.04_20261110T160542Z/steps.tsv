@@ -1,0 +1,8 @@
+step	seconds	exit
+apt	16.9	0
+pixi_install	1.6	0
+pixi_init	0.0	0
+add	7.4	0
+probe_py	5.9	0
+probe_rasterio	6.3	0
+sizes	1.1	0

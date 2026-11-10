@@ -1,0 +1,61 @@
+{
+  "lang": "python",
+  "binding": "rasterio",
+  "python": "3.12.3",
+  "rasterio": "1.5.2",
+  "gdal_rasterio": "3.12.2",
+  "driver_count": 147,
+  "drivers": {
+    "GTiff": true,
+    "COG": true,
+    "VRT": true,
+    "netCDF": true,
+    "HDF5": true,
+    "Zarr": true,
+    "Parquet": false,
+    "GPKG": true,
+    "FlatGeobuf": false,
+    "GeoJSON": true,
+    "ESRI Shapefile": true,
+    "JP2OpenJPEG": true,
+    "KEA": false,
+    "PDF": true,
+    "STACIT": true,
+    "GTI": true,
+    "PostgreSQL": false,
+    "OpenFileGDB": false,
+    "LIBKML": false,
+    "WMS": true,
+    "WMTS": true
+  },
+  "warp_seconds": 5.44,
+  "warp": {
+    "shape": [
+      1000,
+      1000
+    ],
+    "valid": 1000000,
+    "min": 73.0,
+    "max": 1425.759,
+    "mean": 558.9196
+  },
+  "libs_after_rasterio": [
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgdal-61394b7a.so.38.3.12.2",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgeos-3ec8fbdb.so.3.14.1",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgeos_c-0be36666.so.1.20.5",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libproj-00dfde79.so.25.9.8.1"
+  ],
+  "pyogrio": "0.13.0",
+  "gdal_pyogrio": "3.12.4",
+  "libs_after_pyogrio": [
+    "/work/venv/lib/python3.12/site-packages/pyogrio.libs/libgdal-253d08a6.so.38.3.12.4",
+    "/work/venv/lib/python3.12/site-packages/pyproj.libs/libproj-bde9a34c.so.25.9.8.1",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgdal-61394b7a.so.38.3.12.2",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgeos-3ec8fbdb.so.3.14.1",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libgeos_c-0be36666.so.1.20.5",
+    "/work/venv/lib/python3.12/site-packages/rasterio.libs/libproj-00dfde79.so.25.9.8.1",
+    "/work/venv/lib/python3.12/site-packages/shapely.libs/libgeos-d1e818bb.so.3.14.1",
+    "/work/venv/lib/python3.12/site-packages/shapely.libs/libgeos_c-ac38a227.so.1.20.5"
+  ],
+  "libgdal_copies": 2
+}

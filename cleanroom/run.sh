@@ -12,13 +12,13 @@ image=${IMAGE:-ubuntu:24.04}
 here=$(cd "$(dirname "$0")" && pwd)
 root=$(dirname "$here")
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
-out="$root/evidence/$arm${PIXI_EXTRA:+-${PIXI_EXTRA// /-}}/${image//[:\/]/-}_$stamp"
+out="$root/evidence/$arm${PIXI_EXTRA:+-${PIXI_EXTRA// /-}}${VARIANT:+-$VARIANT}/${image//[:\/]/-}_$stamp"
 mkdir -p "$out"
 echo "arm=$arm image=$image -> $out"
 docker pull -q "$image" >/dev/null
 docker image inspect "$image" --format '{{index .RepoDigests 0}}' > "$out/image-digest.txt"
 docker run --rm \
-  -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" -e ARM="$arm" -e PIXI_EXTRA="${PIXI_EXTRA:-}" -e IMAGE="$image" \
+  -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" -e ARM="$arm" -e PIXI_EXTRA="${PIXI_EXTRA:-}" -e PIXI_PKGS="${PIXI_PKGS:-}" -e IMAGE="$image" \
   -v "$here:/cleanroom:ro" -v "$out:/out" \
   "$image" bash /cleanroom/arms/"$arm".sh
 echo "done: $out"

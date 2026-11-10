@@ -1,0 +1,17 @@
+Collecting gdal==3.8.4
+  Downloading GDAL-3.8.4.tar.gz (802 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 802.5/802.5 kB 14.1 MB/s eta 0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: gdal
+  Building wheel for gdal (pyproject.toml): started
+  Building wheel for gdal (pyproject.toml): finished with status 'done'
+  Created wheel for gdal: filename=gdal-3.8.4-cp312-cp312-linux_x86_64.whl size=3395728 sha256=ce650c3b2add336c1c6cf4aefea18be319e57b0ff6137134a8a74d6199d7b2cb
+  Stored in directory: /root/.cache/pip/wheels/06/5d/17/416d1dc0d91e129099405cb0a173ff2cd105745990b903a2d2
+Successfully built gdal
+Installing collected packages: gdal
+Successfully installed gdal-3.8.4

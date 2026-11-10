@@ -1,0 +1,17 @@
+step	seconds	exit
+apt	37.2	0
+pip_system	0.3	1
+venv	2.8	0
+pip_stack	19.4	0
+sizes_pre	0.5	0
+probe_rasterio	6.0	0
+pip_gdal_wheel	0.7	1
+pip_gdal	5.2	1
+uv_install	0.8	0
+uv_gdal	1.4	1
+apt_gdal_dev	85.7	0
+pip_gdal_pinned	19.1	0
+probe_gdal_apt	5.7	1
+pip_gdal_numpy	19.9	0
+probe_gdal_apt2	5.6	0
+sizes_post	0.2	0
