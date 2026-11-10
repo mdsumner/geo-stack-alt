@@ -89,9 +89,11 @@ What this shows about the stacks:
 1. **Add `libgdal` and `libgdal-arrow-parquet`, not just `gdal`.** conda-forge `gdal` pulls in
    only `libgdal-core`: no netCDF, HDF5, JP2, KEA, PDF, PostgreSQL or Parquet. `libgdal` adds
    all but Parquet, which is a separate package because of Arrow. Sizes are in item 6.
-2. **ximage** isn't on conda-forge yet. It is pure R, so `install.packages("ximage")` inside the
-   env works with no compiler, but it isn't recorded in `pixi.lock`. A conda-forge recipe would
-   fix that.
+2. **ximage** isn't on conda-forge yet: `r-ximage` is submitted
+   ([conda-forge/staged-recipes#35576](https://github.com/conda-forge/staged-recipes/pull/35576)).
+   Until it lands, `install.packages("ximage")` inside the env works with no compiler, since it
+   is pure R, but isn't recorded in `pixi.lock`. Once it's there, add `r-ximage` and drop the
+   CRAN step.
 3. **Record the GDAL version and resampling method in every output** (GeoTIFF tags or a
    sidecar). Results depend on the GDAL version, as the finding above shows.
 4. On Ubuntu 24.04, `pip install` outside a venv fails with `error: externally-managed-environment`
