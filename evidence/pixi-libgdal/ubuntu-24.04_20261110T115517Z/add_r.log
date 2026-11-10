@@ -1,0 +1,5 @@
+Added r-base >=4.5.3,<4.6
+Added r-gdalraster >=2.7.0,<3
+Added r-vapour >=0.16.0,<0.17
+Added r-wk >=0.9.5,<0.10
+Added r-jsonlite >=2.0.0,<3

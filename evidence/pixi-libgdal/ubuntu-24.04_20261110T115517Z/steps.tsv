@@ -1,0 +1,10 @@
+step	seconds	exit
+apt	16.8	0
+pixi_install	1.6	0
+pixi_init	0.0	0
+add_python	2.9	0
+add_r	2.3	0
+ximage	2.5	0
+probe_py	5.9	0
+probe_r	13.3	0
+sizes	0.6	0

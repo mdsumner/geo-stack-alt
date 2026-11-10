@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+# Raster outputs from experiments: reproducible from cleanroom/, not kept in git
+*.tif
