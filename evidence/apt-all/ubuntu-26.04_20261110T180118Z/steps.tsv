@@ -1,0 +1,7 @@
+step	seconds	exit
+apt	21.3	0
+apt_python	77.5	0
+r2u_setup	55.9	0
+install	22.3	0
+probe_py	5.9	0
+probe_r	13.2	0

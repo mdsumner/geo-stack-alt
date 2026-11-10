@@ -1,0 +1,56 @@
+{
+  "lang": "R",
+  "R": "4.6.2",
+  "packages": {
+    "gdalraster": "2.7.0",
+    "vapour": "0.16.0",
+    "wk": "0.9.5",
+    "ximage": "0.1.0"
+  },
+  "gdal_vapour": "GDAL 3.12.2 \"Chicoutimi\", released 2026/02/03",
+  "gdal_gdalraster": "GDAL 3.12.2 \"Chicoutimi\", released 2026/02/03",
+  "driver_count": 210,
+  "drivers": {
+    "GTiff": true,
+    "COG": true,
+    "VRT": true,
+    "netCDF": true,
+    "HDF5": true,
+    "Zarr": true,
+    "Parquet": false,
+    "GPKG": true,
+    "FlatGeobuf": true,
+    "GeoJSON": true,
+    "ESRI Shapefile": true,
+    "JP2OpenJPEG": true,
+    "KEA": false,
+    "PDF": true,
+    "STACIT": true,
+    "GTI": true,
+    "PostgreSQL": true,
+    "OpenFileGDB": true,
+    "LIBKML": true,
+    "WMS": true,
+    "WMTS": true
+  },
+  "vapour_seconds": 6.46,
+  "vapour": {
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 73,
+    "max": 1425.759,
+    "mean": 558.9196
+  },
+  "gdalraster_seconds": 5.3,
+  "gdalraster": {
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 73,
+    "max": 1425.759,
+    "mean": 558.9196
+  },
+  "png": "ok",
+  "capabilities_png": true,
+  "capabilities_cairo": true,
+  "libs": ["/usr/lib/x86_64-linux-gnu/libgdal.so.38.3.12.2", "/usr/lib/x86_64-linux-gnu/libgeos.so.3.14.1", "/usr/lib/x86_64-linux-gnu/libgeos_c.so.1.20.5", "/usr/lib/x86_64-linux-gnu/libproj.so.25.9.7.1"]
+}

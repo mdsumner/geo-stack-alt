@@ -1,0 +1,49 @@
+{
+  "lang": "python",
+  "binding": "osgeo.gdal",
+  "python": "3.14.4",
+  "gdal": "3.12.2",
+  "proj": "9.7.1",
+  "driver_count": 211,
+  "drivers": {
+    "GTiff": true,
+    "COG": true,
+    "VRT": true,
+    "netCDF": true,
+    "HDF5": true,
+    "Zarr": true,
+    "Parquet": false,
+    "GPKG": true,
+    "FlatGeobuf": true,
+    "GeoJSON": true,
+    "ESRI Shapefile": true,
+    "JP2OpenJPEG": true,
+    "KEA": false,
+    "PDF": true,
+    "STACIT": true,
+    "GTI": true,
+    "PostgreSQL": true,
+    "OpenFileGDB": true,
+    "LIBKML": true,
+    "WMS": true,
+    "WMTS": true
+  },
+  "warp_seconds": 5.46,
+  "warp": {
+    "shape": [
+      1000,
+      1000
+    ],
+    "valid": 1000000,
+    "min": 73.0,
+    "max": 1425.759,
+    "mean": 558.9196
+  },
+  "gdal_run": "ok: [3600, 3600]",
+  "libs": [
+    "/usr/lib/x86_64-linux-gnu/libgdal.so.38.3.12.2",
+    "/usr/lib/x86_64-linux-gnu/libgeos.so.3.14.1",
+    "/usr/lib/x86_64-linux-gnu/libgeos_c.so.1.20.5",
+    "/usr/lib/x86_64-linux-gnu/libproj.so.25.9.7.1"
+  ]
+}
