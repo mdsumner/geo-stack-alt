@@ -1,0 +1,17 @@
+Warning 1: Field sarard:speckle_filter_window of unhandled type list<element: null> ignored
+{
+  "gdal": "3.13.3",
+  "url": "https://dea-public-data-dev.s3.ap-southeast-2.amazonaws.com/experimental/baseline/pyrosar_gamma/ga_s1_nrb_ew_hh_hv_1_v2.parquet",
+  "driver": "Parquet",
+  "features": 190,
+  "fields": 149,
+  "geom_type": "Multi Polygon",
+  "extent": [
+    -180.0,
+    182.67,
+    -79.861,
+    -63.174
+  ],
+  "first_id": "S1A_EW_GRDM_1SDH_20190103T112546_20190103T112656_025312_02CCF2_83F6",
+  "seconds": 0.72
+}

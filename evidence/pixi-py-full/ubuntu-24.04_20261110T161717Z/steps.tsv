@@ -1,0 +1,8 @@
+step	seconds	exit
+apt	16.6	0
+pixi_install	1.6	0
+pixi_init	0.0	0
+add	3.2	0
+probe_py	5.9	0
+probe_parquet	0.8	0
+sizes	1.1	0

@@ -1,0 +1,6 @@
+env_bytes 844673930
+env_files 18318
+cache_bytes 886346307
+disk_total_bytes 1080304512  (env + cache, hardlinks counted once)
+pixi 0.84.2
+Installed for: linux-64

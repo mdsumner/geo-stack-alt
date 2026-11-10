@@ -14,6 +14,9 @@ mkdir -p /work/geo && cd /work/geo
 step pixi_init pixi init .
 step add pixi add $PKGS
 step probe_py pixi run python /cleanroom/probe/probe_gdal.py /out/probe_py.json
+if pixi run python -c "import sys; from osgeo import ogr; sys.exit(ogr.GetDriverByName('Parquet') is None)"; then
+  step probe_parquet pixi run python /cleanroom/probe/probe_parquet.py /out/probe_parquet.json
+fi
 if pixi list | grep -q '^rasterio '; then
   step probe_rasterio pixi run python /cleanroom/probe/probe_rasterio.py /out/probe_rasterio.json
 fi

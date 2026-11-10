@@ -38,7 +38,7 @@ at 40 m (bilinear), plus versions, drivers and the shared libraries loaded in th
 | `osgeo.gdal` | not available: no wheel on PyPI; `pip`/`uv pip install gdal` fail without `gdal-config` | yes, incl. `gdal.Run()` (the new CLI as an API) |
 | `osgeo.gdal` the hard way | apt `libgdal-dev g++ python3-dev` (82 s), `pip install gdal==3.8.4`, then a `--no-build-isolation` rebuild to get `gdal_array`: GDAL 3.8.4, no `gdal.Run` | n/a |
 | R in the same env | not attempted yet | gdalraster 2.7.0, vapour 0.16.0, wk 0.9.5, ximage 0.1.0 |
-| Drivers missing (of 21 checked) | Parquet, FlatGeobuf, OpenFileGDB, KEA, PostgreSQL, LIBKML | Parquet only (`libgdal-arrow-parquet`, untested) |
+| Drivers missing (of 21 checked) | Parquet, FlatGeobuf, OpenFileGDB, KEA, PostgreSQL, LIBKML | Parquet only; none with `libgdal-arrow-parquet` (guideline 6) |
 | DEM warp | mean 558.9196 | mean 558.9198, identical across osgeo.gdal, gdalraster, vapour |
 
 Raw logs, timings, lockfiles and probe JSON: [`evidence/`](evidence/).
@@ -86,9 +86,9 @@ What this shows about the stacks:
 
 ## Guidelines so far
 
-1. **Add `libgdal`, not just `gdal`.** conda-forge `gdal` pulls in only `libgdal-core`: no
-   netCDF, HDF5, JP2, KEA, PDF or PostgreSQL. `libgdal` adds those plugins (+300 MB).
-   Parquet needs `libgdal-arrow-parquet` as well.
+1. **Add `libgdal` and `libgdal-arrow-parquet`, not just `gdal`.** conda-forge `gdal` pulls in
+   only `libgdal-core`: no netCDF, HDF5, JP2, KEA, PDF, PostgreSQL or Parquet. `libgdal` adds
+   all but Parquet, which is a separate package because of Arrow. Sizes are in item 6.
 2. **ximage** isn't on conda-forge yet. It is pure R, so `install.packages("ximage")` inside the
    env works with no compiler, but it isn't recorded in `pixi.lock`. A conda-forge recipe would
    fix that.
@@ -100,10 +100,21 @@ What this shows about the stacks:
 5. **Use `matplotlib-base`, not `matplotlib`.** On conda-forge, `matplotlib` pulls in Qt6,
    PySide6, LLVM and Clang (about 150 MB compressed). With it, the Python-only env was 1.7 GB
    and 36k files; without it, 934 MB.
-6. **`libgdal` costs about 300 MB and 9k files** (191 to 210 drivers). Most of that is TileDB
-   and its cloud SDKs (AWS, Google Cloud, gRPC), plus PostgreSQL, HDF5 and Poppler. If size
-   matters, add only the plugins you need (`libgdal-netcdf`, `libgdal-hdf5`,
-   `libgdal-jp2openjpeg`, ...) on top of `gdal`. That's not yet tested as a set.
+6. **Choosing GDAL plugins** (Python only, matplotlib-base, clean ubuntu:24.04):
+
+   | GDAL packages | Env | Files | Drivers | Missing from the 21 checked |
+   |---|---|---|---|---|
+   | `gdal` (= libgdal-core) | 626 MB | 14k | 191 | netCDF, HDF5, Parquet, JP2, KEA, PDF, PostgreSQL |
+   | `gdal libgdal-netcdf libgdal-hdf5 libgdal-jp2openjpeg libgdal-arrow-parquet` | 845 MB | 18k | 203 | KEA, PDF, PostgreSQL |
+   | `gdal libgdal` | 934 MB | 23k | 210 | Parquet |
+   | **`gdal libgdal libgdal-arrow-parquet`** | **1.02 GB** | **24k** | **212** | none |
+   | (pip: rasterio + geopandas wheels, for scale) | 534 MB | 9k | 147 | Parquet, FlatGeobuf, OpenFileGDB, KEA, PostgreSQL, LIBKML |
+
+   Most of the size is the cloud SDKs (gRPC, Google Cloud, AWS, protobuf). TileDB and Arrow
+   both pull them in, so the trimmed set saves only 170 MB. **Default to all plugins**
+   (`libgdal libgdal-arrow-parquet`); use the trimmed set when files or space are tight.
+   Parquet works for real: GDAL's Parquet driver reads the ga-sar-ice EW STAC-GeoParquet index
+   over HTTPS in under a second (190 scenes, 149 fields).
 
 A starting `pixi.toml` that matches arm B:
 
@@ -117,6 +128,7 @@ python = "*"
 numpy = "*"
 gdal = "*"
 libgdal = "*"
+libgdal-arrow-parquet = "*"
 matplotlib-base = "*"
 r-base = "*"
 r-gdalraster = "*"
@@ -161,9 +173,7 @@ bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
 
 ## Next
 
-- `libgdal-arrow-parquet`, and the STAC-GeoParquet index from ga-sar-ice as a test.
 - Arm A with R the way a newcomer gets it (apt r-base, then sf/terra), for the R half of the
   comparison.
-- A trimmed plugin set (gdal + netCDF/HDF5/JP2/Parquet) as the recommended Python env.
 - Port a real workload from rasterio to osgeo.gdal and compare it with the R version.
 - Run the same arms on Nectar, Setonix and a laptop.

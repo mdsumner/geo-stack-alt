@@ -1,0 +1,15 @@
+[workspace]
+channels = ['conda-forge']
+name = "geo"
+platforms = ['linux-64']
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.15.2,<3.16"
+numpy = ">=2.5.4,<3"
+gdal = ">=3.13.3,<4"
+libgdal = ">=3.13.3,<4"
+libgdal-arrow-parquet = ">=3.13.3,<4"
+matplotlib-base = ">=3.11.2,<4"

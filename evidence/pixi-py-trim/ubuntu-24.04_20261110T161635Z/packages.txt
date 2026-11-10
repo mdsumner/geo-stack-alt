@@ -1,0 +1,1 @@
+python numpy gdal libgdal-netcdf libgdal-hdf5 libgdal-jp2openjpeg libgdal-arrow-parquet matplotlib-base
