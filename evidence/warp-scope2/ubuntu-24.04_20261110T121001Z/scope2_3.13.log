@@ -1,0 +1,11 @@
+GDAL 3.13.3
+same CRS, 10 -> 12.5 m             shape=(800, 800)  scale-ignored=True
+same CRS, 10 -> 15 m               shape=(667, 667)  scale-ignored=True
+same CRS, 10 -> 17.5 m             shape=(571, 571)  scale-ignored=True
+same CRS, 10 -> 20 m               shape=(500, 500)  scale-ignored=False
+same CRS, 10 -> 25 m               shape=(400, 400)  scale-ignored=False
+same CRS, 10 -> 40 m               shape=(250, 250)  scale-ignored=False
+4326 -> 3577, ~23x31 -> 25 m       shape=(1299, 1071)  scale-ignored=True
+4326 -> 3577, ~23x31 -> 40 m       shape=(812, 669)  scale-ignored=True
+4326 -> 3577, ~23x31 -> 60 m       shape=(541, 446)  scale-ignored=False
+4326 -> 3577, sub-window 40 m      shape=(250, 250)  scale-ignored=True

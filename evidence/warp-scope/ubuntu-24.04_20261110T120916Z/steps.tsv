@@ -1,0 +1,7 @@
+step	seconds	exit
+apt	17.4	0
+pixi_install	1.7	0
+add_3.12	1.5	0
+scope_3.12	1.4	0
+add_3.13	0.9	0
+scope_3.13	0.6	0

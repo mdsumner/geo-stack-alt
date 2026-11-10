@@ -1,0 +1,7 @@
+step	seconds	exit
+apt	17.4	0
+pixi_install	1.8	0
+add_3.12	1.6	0
+variants_3.12	11.0	0
+add_3.13	0.7	0
+variants_3.13	10.0	0

@@ -1,0 +1,7 @@
+3.12 src geotransform (145.9998611111111, 0.0002777777777777778, 0.0, -41.99986111111111, 0.0, -0.0002777777777777778) Point
+near ok
+bilinear ok
+bilinear_noscale ok
+cubic ok
+average ok
+bilinear_pointignore ok

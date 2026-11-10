@@ -1,0 +1,52 @@
+GDAL: Proxy driver Arrow *not* registered due to ogr_Arrow.so not being found
+GDAL: Proxy driver FITS *not* registered due to gdal_FITS.so not being found
+GDAL: Proxy driver GRIB *not* registered due to gdal_GRIB.so not being found
+GDAL: Proxy driver AVIF *not* registered due to gdal_AVIF.so not being found
+GDAL: Proxy driver HEIF *not* registered due to gdal_HEIF.so not being found
+GDAL: Proxy driver HDF4 *not* registered due to gdal_HDF4.so not being found
+GDAL: Proxy driver HDF4Image *not* registered due to gdal_HDF4.so not being found
+GDAL: Proxy driver KEA *not* registered due to gdal_KEA.so not being found
+GDAL: Proxy driver HDF5 *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver HDF5Image *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver BAG *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver S102 *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver S104 *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver S111 *not* registered due to gdal_HDF5.so not being found
+GDAL: Proxy driver JP2OpenJPEG *not* registered due to gdal_JP2OpenJPEG.so not being found
+GDAL: Proxy driver netCDF *not* registered due to gdal_netCDF.so not being found
+GDAL: Proxy driver Parquet *not* registered due to ogr_Parquet.so not being found
+GDAL: Proxy driver PostGISRaster *not* registered due to gdal_PostGISRaster.so not being found
+GDAL: Proxy driver PDF *not* registered due to gdal_PDF.so not being found
+GDAL: Proxy driver PostgreSQL *not* registered due to ogr_PG.so not being found
+GDAL: Proxy driver TileDB *not* registered due to gdal_TileDB.so not being found
+GDAL: Proxy driver XLS *not* registered due to ogr_XLS.so not being found
+GDAL: Proxy driver ADBC *not* registered due to ogr_ADBC.so not being found
+HTTP: libcurl/8.23.0 OpenSSL/3.6.5 zlib/1.3.2 zstd/1.5.7 libpsl/0.23.1 libssh2/1.11.1 nghttp2/1.71.0 mit-krb5/1.22.2
+VSICURL: GetFileSize(https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)=41604705  response_code=200
+VSICURL: Downloading 0-16383 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Got response_code=206
+GDAL: GDALOpen(/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif, this=0x5972a8e59e10) succeeds as GTiff.
+GTiff: ScanDirectories()
+GTiff: Opened 1800x1800 overview.
+GTiff: Opened 900x900 overview.
+GTiff: Opened 450x450 overview.
+GDAL: Computing area of interest: 146, -42.9999, 147, -41.9999
+OGRCT: Wrap source at 146.5.
+GDAL: GDALDriver::Create(GTiff,/tmp/w3.12.tif,1000,1000,1,Float32,(nil))
+WARP: Copying metadata from first source to destination dataset
+GDALWARP: Defining SKIP_NOSOURCE=YES
+VSICURL: Downloading 19227186-27201624 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Downloading 28572171-30421359 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Download completed
+GDAL: GDAL_CACHEMAX = 6440 MB
+VSICURL: Downloading 30408704-31473663 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Got response_code=206
+VSICURL: Downloading 31473664-33603583 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Got response_code=206
+VSICURL: Downloading 33603584-35733503 (https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif)...
+VSICURL: Got response_code=206
+GDAL: GDALWarpKernel()::GWKBilinearNoMasksOrDstDensityOnlyFloat() Src=861,1050,1890x1481 Dst=0,0,1000x1000
+gdal 3.12.4 src 3600 3600 6 nodata None ovr 3 [1800, 900, 450]
+{'shape': [1000, 1000], 'valid': 1000000, 'min': 73.0, 'max': 1425.759, 'mean': 558.9196}
+GDAL: GDALClose(/vsicurl/https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_S43_00_E146_00_DEM/Copernicus_DSM_COG_10_S43_00_E146_00_DEM.tif, this=0x5972a8e59e10)
+GDAL: GDALClose(/tmp/w3.12.tif, this=0x5972a9582d30)
