@@ -1,0 +1,8 @@
+step	seconds	exit
+apt	78.9	0
+r2u_setup	40.1	0
+r_install	14.4	0
+examples_py	3.2	0
+examples_r	11.0	0
+printed	0.0	1
+fesm_pixels	0.2	0

@@ -1,0 +1,20 @@
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+2019: reflectance 0.004 to 0.568
+2020: reflectance 0.008 to 0.703
+2025: reflectance 0.008 to 0.630
+glider records: 551, of which 2000–2019: 156
+true north: 7.9 degrees clockwise of straight up
+wrote before_after.png (1717 KB)
+wrote ndvi_change.png (1041 KB)
+wrote fire_severity_and_gliders.png (149 KB)

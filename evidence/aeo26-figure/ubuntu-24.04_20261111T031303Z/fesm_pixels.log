@@ -1,0 +1,3 @@
+/usr/lib/python3/dist-packages/osgeo/gdal.py:312: FutureWarning: Neither gdal.UseExceptions() nor gdal.DontUseExceptions() has been explicitly called. In GDAL 4.0, exceptions will be enabled by default.
+  warnings.warn(
+decimated severity, Python vs R: shape (1000, 1000) differ: 0

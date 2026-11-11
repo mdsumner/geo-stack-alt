@@ -155,6 +155,7 @@ code, not from two GDAL builds.
 | … its figures, in R | 2×2 change maps and histogram with ximage, gdalraster, base graphics | Same decimated pixels as Python's averaged read; stats equal to float32 rounding; same figure | `evidence/tas-s1-figure/` |
 | mi-island-s1-mirounga | Plans to reuse the tasmania per-scene step | Covered by the above | |
 | aeo26-workshop | Sentinel-2 composites, fire severity, glider records | Main script was already `osgeo.gdal`. The two presenters' scripts, ported: answer table identical, all 3 example PNGs **byte-identical**. The project no longer needs rasterio | `evidence/aeo26-compare/` |
+| … its figures, in R | The 3 example figures (false colour, NDVI change, severity with gliders) with ximage, gdalraster, base graphics | Same printed numbers (reflectance ranges, glider counts, true-north angle); decimated severity pixels identical (0 of 1,000,000 differ); same figures, drawn by a different device | `evidence/aeo26-figure/` |
 | ga-sar-ice (GA tutorial) | `odc.stac.load` of 45 IW bursts, solar-day groups, 200 m EPSG:3031 | Plain `osgeo.gdal`: **every pixel equal**, but ~90 lines against ~15. With `stacgrid` (below): ~10 lines in Python or R, every pixel equal | `evidence/ga-sar-ice-compare/`, `evidence/stacgrid/` |
 
 Line counts for the ports: tasmania 415 → 459, check_values 181 → 199, make_examples 267 → 277.
@@ -194,6 +195,8 @@ in STACIT mode too. About 110 lines each; serial, so about 11-13 s against odc's
   installs numpy 2 into it: apt's rasterio was built for numpy 1.26 and won't import. Pin numpy
   to apt's version. (`evidence/ga-sar-ice-compare/failed/`)
 - **odc-stac's S3 setup** (`configure_s3_access`) needs `odc-stac[botocore]`.
+- **R's PNG device needs a UTF-8 locale.** In a bare container (C locale), `·`, `–` and `→` in
+  titles come out as `..`. Set `LANG=C.UTF-8`.
 - **S3 listing from containers** timed out once (about 9,800 prefixes from 16 threads). Shared
   code, not a stack difference; the tasmania runs reuse a saved burst index.
 
@@ -315,7 +318,6 @@ MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- aeo26's three example figures in R (ximage), as was done for tasmania.
 - `stacgrid`: parallel reads, `raster:bands` scale/offset, POST-only APIs; try it on the
   fast-ice notebooks.
 - Run the project ports on pixi too, and on Nectar, Setonix and a laptop.

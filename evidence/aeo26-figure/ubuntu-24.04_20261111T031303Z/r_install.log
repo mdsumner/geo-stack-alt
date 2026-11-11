@@ -1,0 +1,89 @@
+Hit https://cloud.r-project.org/bin/linux/ubuntu noble-cran40/ InRelease        
+Hit http://security.ubuntu.com/ubuntu noble-security InRelease                  
+Hit http://archive.ubuntu.com/ubuntu noble InRelease                            
+Hit https://r2u.stat.illinois.edu/ubuntu noble InRelease                        
+Hit http://archive.ubuntu.com/ubuntu noble-updates InRelease                    
+Hit http://archive.ubuntu.com/ubuntu noble-backports InRelease                  
+Fetched 0 B in 0s (0 B/s)                                                       
+Install system packages as root...
+Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 5%Reading package lists... 5%Reading package lists... 10%Reading package lists... 10%Reading package lists... 26%Reading package lists... 26%Reading package lists... 30%Reading package lists... 30%Reading package lists... 65%Reading package lists... 69%Reading package lists... 69%Reading package lists... 69%Reading package lists... 69%Reading package lists... 70%Reading package lists... 70%Reading package lists... 74%Reading package lists... 74%Reading package lists... 80%Reading package lists... 80%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 86%Reading package lists... 90%Reading package lists... 90%Reading package lists... 94%Reading package lists... 94%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading state information... 0% Reading state information... 0% Reading state information... Done
+Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 5%      Reading package lists... 5%      Reading package lists... 10%     Reading package lists... 10%     Reading package lists... 26%     Reading package lists... 26%     Reading package lists... 30%     Reading package lists... 30%     Reading package lists... 65%     Reading package lists... 69%     Reading package lists... 69%     Reading package lists... 69%     Reading package lists... 69%     Reading package lists... 70%     Reading package lists... 70%     Reading package lists... 74%     Reading package lists... 74%     Reading package lists... 80%     Reading package lists... 80%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 90%     Reading package lists... 90%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... Done    
+Building dependency tree... 0%   Building dependency tree... 0%   Building dependency tree... 50%  Building dependency tree... 50%  Building dependency tree... Done 
+Reading state information... 0%  Reading state information... 0%  Selecting previously unselected package r-cran-bit.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 16273 files and directories currently installed.)
+Preparing to unpack .../00-r-cran-bit_4.6.0-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-bit (4.6.0-1.ca2404.1) ...
+Selecting previously unselected package r-cran-bit64.
+Preparing to unpack .../01-r-cran-bit64_4.8.6-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-bit64 (4.8.6-1.ca2404.1) ...
+Selecting previously unselected package r-cran-cli.
+Preparing to unpack .../02-r-cran-cli_3.6.6-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-cli (3.6.6-1.ca2404.1) ...
+Selecting previously unselected package r-cran-nanoarrow.
+Preparing to unpack .../03-r-cran-nanoarrow_0.9.0-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-nanoarrow (0.9.0-1.ca2404.1) ...
+Selecting previously unselected package r-cran-rcpp.
+Preparing to unpack .../04-r-cran-rcpp_1.1.2-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-rcpp (1.1.2-1.ca2404.1) ...
+Selecting previously unselected package r-cran-wk.
+Preparing to unpack .../05-r-cran-wk_0.9.5-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-wk (0.9.5-1.ca2404.1) ...
+Selecting previously unselected package r-cran-rlang.
+Preparing to unpack .../06-r-cran-rlang_1.3.0-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-rlang (1.3.0-1.ca2404.1) ...
+Selecting previously unselected package r-cran-xml2.
+Preparing to unpack .../07-r-cran-xml2_1.6.0-1.ca2404.2_amd64.deb ...
+Unpacking r-cran-xml2 (1.6.0-1.ca2404.2) ...
+Selecting previously unselected package r-cran-yyjsonr.
+Preparing to unpack .../08-r-cran-yyjsonr_0.1.22-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-yyjsonr (0.1.22-1.ca2404.1) ...
+Selecting previously unselected package r-cran-rcppint64.
+Preparing to unpack .../09-r-cran-rcppint64_0.0.5-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-rcppint64 (0.0.5-1.ca2404.1) ...
+Selecting previously unselected package r-cran-gdalraster.
+Preparing to unpack .../10-r-cran-gdalraster_2.7.0-1.ca2404.1_amd64.deb ...
+Unpacking r-cran-gdalraster (2.7.0-1.ca2404.1) ...
+Selecting previously unselected package r-cran-ximage.
+Preparing to unpack .../11-r-cran-ximage_0.1.0-1.ca2404.1_all.deb ...
+Unpacking r-cran-ximage (0.1.0-1.ca2404.1) ...
+Setting up r-cran-rcpp (1.1.2-1.ca2404.1) ...
+Setting up r-cran-rlang (1.3.0-1.ca2404.1) ...
+Setting up r-cran-nanoarrow (0.9.0-1.ca2404.1) ...
+Setting up r-cran-rcppint64 (0.0.5-1.ca2404.1) ...
+Setting up r-cran-bit (4.6.0-1.ca2404.1) ...
+Setting up r-cran-cli (3.6.6-1.ca2404.1) ...
+Setting up r-cran-bit64 (4.8.6-1.ca2404.1) ...
+Setting up r-cran-yyjsonr (0.1.22-1.ca2404.1) ...
+Setting up r-cran-ximage (0.1.0-1.ca2404.1) ...
+Setting up r-cran-wk (0.9.5-1.ca2404.1) ...
+Setting up r-cran-xml2 (1.6.0-1.ca2404.2) ...
+Setting up r-cran-gdalraster (2.7.0-1.ca2404.1) ...
+Reading state information... Done
+Get:1 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-bit amd64 4.6.0-1.ca2404.1 [594 kB]
+Get:2 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-bit64 amd64 4.8.6-1.ca2404.1 [549 kB]
+Get:3 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-cli amd64 3.6.6-1.ca2404.1 [1308 kB]
+Get:4 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-nanoarrow amd64 0.9.0-1.ca2404.1 [600 kB]
+Get:5 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-rcpp amd64 1.1.2-1.ca2404.1 [2075 kB]
+Get:6 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-wk amd64 0.9.5-1.ca2404.1 [1707 kB]
+Get:7 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-rlang amd64 1.3.0-1.ca2404.1 [1561 kB]
+Get:8 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-xml2 amd64 1.6.0-1.ca2404.2 [268 kB]
+Get:9 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-yyjsonr amd64 0.1.22-1.ca2404.1 [1125 kB]
+Get:10 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-rcppint64 amd64 0.0.5-1.ca2404.1 [49.0 kB]
+Get:11 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 r-cran-gdalraster amd64 2.7.0-1.ca2404.1 [3858 kB]
+Get:12 https://r2u.stat.illinois.edu/ubuntu noble/main all r-cran-ximage all 0.1.0-1.ca2404.1 [1640 kB]
+Fetched 15.3 MB in 0s (0 B/s)                                                   
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+gdalraster 2.7.0 ximage 0.1.0 GDAL 3.8.4, released 2024/02/08 
