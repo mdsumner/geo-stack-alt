@@ -209,10 +209,16 @@ and R (`gdalraster`, `jsonlite`), with the same functions: `stac_search` (GET or
 `items_from_geoparquet`, `grid_from_bbox`, `grid_from_raster`, `group_items`, `stac_load`.
 Overviews, merge order and the solar-day longitude are arguments. On Ubuntu 24.04 and 26.04
 its defaults equal `odc.stac.load()` in every pixel, from both languages, and Python equals R
-in STACIT mode too. About 270 lines each. Reads run in parallel (threads in Python, forked
+in STACIT mode too. About 300 lines each. Reads run in parallel (threads in Python, forked
 processes in R): with 8 workers the load takes about 3 s in Python and 5-6 s in R, against
 odc's 6.4 s and 11-13 s serial, with the same pixels at every worker count
 (`evidence/stacgrid-parallel/`).
+
+**Scale and offset.** odc-stac 0.5 ignores `raster:bands` scale/offset and returns stored values.
+Applying one offset afterwards is wrong where a group mixes items with different offsets: on
+Earth Search Sentinel-2 across the 04.00 baseline change, 6 of 17 solar-day groups did, and 1.6
+to 2.3 M of 3.9 M pixels came out 0.1 off. `stac_load(..., scale=True)` scales each item before the
+merge, equal in every pixel to a per-item odc reference (`evidence/scale/`).
 
 On GA's fast-ice notebooks it equals the notebooks' odc-stac loads in every pixel too
 (details in [`stacgrid/README.md`](stacgrid/README.md)). Getting there exposed odc-stac's
@@ -337,6 +343,7 @@ bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STAC
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-16 workers
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice notebook loads (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh scale      # raster:bands scale/offset (pixi)
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -370,5 +377,5 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- `stacgrid`: `raster:bands` scale/offset; the fast-ice processing beyond the loads (NormCovar).
+- `stacgrid`: the fast-ice processing beyond the loads (NormCovar); multi-band assets.
 - Run the project ports on Nectar, Setonix and a laptop.

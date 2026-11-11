@@ -203,7 +203,7 @@ def solar_day(item, lon: float | None = None) -> str:
 
 
 def group_items(items: list[dict], by: str | Callable = "solar_day", grid: dict | None = None) -> dict[str, list[dict]]:
-    """Group items, in time order within each group, groups in label order.
+    """Group items, in (time, id) order within each group, groups in label order.
     `by`: "solar_day", "time" (each datetime), a property name, or a function of the item.
     With `grid`, solar days use the grid centre's longitude for every item, as odc.stac.load does
     (odc-stac 0.5: one longitude for the whole load, offset truncated to whole hours)."""
@@ -212,7 +212,8 @@ def group_items(items: list[dict], by: str | Callable = "solar_day", grid: dict 
            (lambda i: i["properties"]["datetime"]) if by == "time" else
            by if callable(by) else (lambda i: str(i["properties"][by])))
     groups: dict[str, list[dict]] = {}
-    for it in sorted(items, key=_when):
+    # time then id, as odc-stac: decides which of two items with the same datetime wins a merge
+    for it in sorted(items, key=lambda i: (_when(i), i["id"])):
         groups.setdefault(key(it), []).append(it)
     return dict(sorted(groups.items()))
 
@@ -234,21 +235,39 @@ def warp_to_grid(src: str, grid: dict, resampling="near", overviews="AUTO") -> t
     return band.ReadAsArray(), band.GetNoDataValue()
 
 
+def scale_offset(item: dict, asset: str) -> tuple[float, float]:
+    """An asset's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[0]),
+    STAC 1.1 "bands"[0] or asset-level "raster:scale"/"raster:offset". (1, 0) when absent."""
+    a = item["assets"][asset]
+    b = (a.get("raster:bands") or a.get("bands") or [{}])[0]
+    pick = lambda k: b.get(k, b.get(f"raster:{k}", a.get(f"raster:{k}")))  # noqa: E731
+    sc, of = pick("scale"), pick("offset")
+    return (1.0 if sc is None else float(sc)), (0.0 if of is None else float(of))
+
+
 def stac_load(groups: dict[str, list[dict]], assets: list[str], grid: dict, resampling="near",
-              overviews="AUTO", fuse="first", workers: int = 8) -> dict[str, np.ndarray]:
+              overviews="AUTO", fuse="first", workers: int = 8, scale: bool = False) -> dict[str, np.ndarray]:
     """Each asset as a (group, y, x) array. Within a group the items are warped in time order and
     merged: fuse="first" keeps the first valid pixel (odc-stac), "last" the last (a VRT mosaic).
     overviews: "AUTO" lets the warp read a coarser overview when downsampling (gdalwarp and
     odc-stac default), "NONE" always reads full resolution (as through a STACIT mosaic).
     workers: warps run in that many threads (GDAL releases the GIL; the reads are network-bound).
-    Results are merged in item order whatever order they finish in, so pixels don't depend on it."""
-    jobs = [(asset, g, asset_href(it, asset)) for asset in assets
-            for g, members in enumerate(groups.values()) for it in members]
-    warp = lambda job: warp_to_grid(job[2], grid, resampling, overviews)  # noqa: E731
+    Results are merged in item order whatever order they finish in, so pixels don't depend on it.
+    scale: False returns the stored values (as odc-stac 0.5 does). True applies each item's own
+    scale and offset (scale_offset()) before merging, as float32 with NaN for nodata: items in one
+    group can carry different offsets (Sentinel-2 processing baselines), so scaling after the
+    merge can be wrong for part of a group. Computed in float64, then rounded to float32."""
+    jobs = [(asset, g, it) for asset in assets for g, members in enumerate(groups.values()) for it in members]
+    warp = lambda job: warp_to_grid(asset_href(job[2], job[0]), grid, resampling, overviews)  # noqa: E731
     out, acc = {}, {}
     with ThreadPoolExecutor(max(1, workers)) as ex:
-        for (asset, g, _), (a, nd) in zip(jobs, ex.map(warp, jobs) if workers > 1 else map(warp, jobs)):
+        for (asset, g, it), (a, nd) in zip(jobs, ex.map(warp, jobs) if workers > 1 else map(warp, jobs)):
             valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
+            if scale:
+                sc, of = scale_offset(it, asset)
+                a = (a.astype("float64") * sc + of).astype("float32")
+                a[~valid] = np.nan
+                nd = float("nan")
             if (asset, g) not in acc:
                 a = a.copy()
                 a[~valid] = np.nan if nd is None else nd

@@ -1,0 +1,14 @@
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+! GDAL WARNING 1: Field sarard:speckle_filter_window of unhandled type list<element: null> ignored
+{"api_items": 15, "api_groups": "69,70", "pq_items": 1, "s": 9.8}

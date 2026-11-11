@@ -183,7 +183,7 @@ solar_day <- function(item, lon = NULL) {
   format(item_time(item) + trunc(lon / 15) * 3600, "%Y-%m-%d", tz = "UTC")
 }
 
-# Group items, time order within each group, groups in label order. With `grid`, solar days use
+# Group items, (time, id) order within each group, groups in label order. With `grid`, solar days use
 # the grid centre's longitude for every item, as odc.stac.load does.
 group_items <- function(items, by = "solar_day", grid = NULL) {
   lon <- if (is.null(grid)) NULL else grid_lon(grid)
@@ -191,10 +191,13 @@ group_items <- function(items, by = "solar_day", grid = NULL) {
     solar_day = function(i) solar_day(i, lon),
     time = function(i) i$properties$datetime,
     function(i) as.character(i$properties[[by]]))
-  items <- items[order(vapply(items, function(i) as.numeric(item_time(i)), 0))]
+  # time then id, as odc-stac: decides which of two items with the same datetime wins a merge.
+  # radix = C-locale string order, the same as Python's
+  items <- items[order(vapply(items, function(i) as.numeric(item_time(i)), 0),
+                       vapply(items, function(i) i$id, ""), method = "radix")]
   k <- vapply(items, key, "")
   g <- split(items, factor(k, levels = unique(k)))
-  g[order(names(g))]
+  g[order(names(g), method = "radix")]
 }
 
 asset_href <- function(item, asset) {
@@ -217,13 +220,30 @@ warp_to_grid <- function(src, grid, resampling = "near", overviews = "AUTO") {
   list(values = v, nodata = ds$getNoDataValue(1), type = ds$getDataTypeName(1))
 }
 
+# An asset's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[[1]]),
+# STAC 1.1 "bands"[[1]] or asset-level "raster:scale"/"raster:offset". c(1, 0) when absent.
+scale_offset <- function(item, asset) {
+  a <- item$assets[[asset]]
+  b <- if (length(a[["raster:bands"]])) a[["raster:bands"]][[1]] else if (length(a$bands)) a$bands[[1]] else list()
+  pick <- function(k) {
+    for (v in list(b[[k]], b[[paste0("raster:", k)]], a[[paste0("raster:", k)]])) if (!is.null(v)) return(as.numeric(v))
+    NULL
+  }
+  c(if (is.null(sc <- pick("scale"))) 1 else sc, if (is.null(of <- pick("offset"))) 0 else of)
+}
+
 # Each asset as an array [x, y, group] (x fastest, rows top-down, as GDAL reads).
 # workers: warps run in that many forked processes (parallel::mclapply; serial on Windows).
 # Results are merged in item order whatever order they finish in, so pixels don't depend on it.
+# scale: FALSE returns the stored values (as odc-stac 0.5). TRUE applies each item's own scale and
+# offset (scale_offset()) before merging, NA for nodata, written as Float32: items in one group can
+# carry different offsets (Sentinel-2 processing baselines), so scaling after the merge can be
+# wrong for part of a group.
 stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AUTO", fuse = "first",
-                      workers = 8L) {
+                      workers = 8L, scale = FALSE) {
   jobs <- do.call(rbind, lapply(assets, function(asset) do.call(rbind, lapply(seq_along(groups), function(g)
-    data.frame(asset = asset, g = g, src = vapply(groups[[g]], asset_href, "", asset = asset))))))
+    data.frame(asset = asset, g = g, i = seq_along(groups[[g]]),
+               src = vapply(groups[[g]], asset_href, "", asset = asset))))))
   warp <- function(src) warp_to_grid(src, grid, resampling, overviews)
   res <- if (workers > 1L && .Platform$OS.type == "unix") {
     parallel::mclapply(jobs$src, warp, mc.cores = workers, mc.preschedule = FALSE)
@@ -236,9 +256,17 @@ stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AU
     arr <- array(NA_real_, c(grid$width, grid$height, length(groups)))
     for (g in seq_along(groups)) {
       acc <- NULL
-      for (w in res[jobs$asset == asset & jobs$g == g]) {
+      sel <- which(jobs$asset == asset & jobs$g == g)
+      for (j in sel) {
+        w <- res[[j]]
         a <- w$values
         valid <- if (is.na(w$nodata)) !is.na(a) else !is.na(a) & a != w$nodata
+        if (scale) {
+          so <- scale_offset(groups[[g]][[jobs$i[j]]], asset)
+          a <- a * so[1] + so[2]
+          a[!valid] <- NA
+          w$nodata <- NA_real_; w$type <- "Float32"
+        }
         if (is.null(acc)) {
           acc <- a; accv <- valid
           acc[!valid] <- w$nodata

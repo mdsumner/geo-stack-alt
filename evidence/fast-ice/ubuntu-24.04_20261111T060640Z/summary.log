@@ -1,0 +1,10 @@
+cmp_demo_py api items [15, 15] same True shape [2, 1627, 1702] same_gt True differ 0 finite_disagree 0 of 2928468
+cmp_demo_py pq items [1, 1] same True shape [1, 1627, 1702] same_gt True differ 0 finite_disagree 0 of 2766943
+cmp_demo_r api items [15, 15] same True shape [2, 1627, 1702] same_gt True differ 0 finite_disagree 0 of 2928468
+cmp_demo_r pq items [1, 1] same True shape [1, 1627, 1702] same_gt True differ 0 finite_disagree 0 of 2766943
+cmp_xarray_py ew items [60, 60] same True shape [60, 1407, 1683] same_gt True differ 0 finite_disagree 0 of 141857249
+cmp_xarray_py iw items [150, 150] same True shape [30, 1407, 1683] same_gt True differ 0 finite_disagree 0 of 68983885
+cmp_xarray_r ew items [60, 60] same True shape [60, 1407, 1683] same_gt True differ 0 finite_disagree 0 of 141857249
+cmp_xarray_r iw items [150, 150] same True shape [30, 1407, 1683] same_gt True differ 0 finite_disagree 0 of 68983885
+ga_cmp_py items [45, 45] hh differ 0 mask differ 0
+ga_cmp_r items [45, 45] hh differ 0 mask differ 0

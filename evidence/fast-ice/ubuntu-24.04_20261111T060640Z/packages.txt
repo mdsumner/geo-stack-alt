@@ -1,0 +1,2 @@
+stack: python=3.13 numpy gdal libgdal libgdal-arrow-parquet r-base r-gdalraster r-jsonlite r-curl
+baseline: odc-stac pystac-client geopandas rioxarray pyarrow botocore dask + pypi stac-geoparquet>=0.8,<0.9

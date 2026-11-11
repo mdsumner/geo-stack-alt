@@ -1,0 +1,11 @@
+step	seconds	exit
+apt	18.7	0
+pixi_install	2.4	0
+pixi_init	0.0	0
+add	7.4	0
+versions	2.5	0
+odc	31.4	0
+sg_py	35.1	0
+sg_r	60.5	0
+cmp_py	1.0	0
+cmp_r	1.0	0

@@ -11,7 +11,8 @@ and R (`stacgrid.R`: gdalraster, jsonlite; curl for POST searches). The same fun
 | Grid: copy an existing raster's (odc's `geobox=`) | `grid_from_raster()` | `grid_from_raster()` |
 | A grid's outline in lon/lat, to search with | `grid_footprint()` | `grid_footprint()` |
 | Group: `"solar_day"`, `"time"`, a property, or a function | `group_items()` | `group_items()` |
-| Warp each group's items onto the grid and merge (in parallel) | `stac_load()` | `stac_load()` |
+| Warp each group's items onto the grid and merge (in parallel; `scale=` applies each item's scale/offset) | `stac_load()` | `stac_load()` |
+| An asset's `raster:bands` scale and offset | `scale_offset()` | `scale_offset()` |
 
 It's the layer osgeo.gdal lacks for STAC time stacks, which odc-stac's `load()` provides. The two
 choices that change pixels are arguments, not hidden defaults:
@@ -20,6 +21,10 @@ choices that change pixels are arguments, not hidden defaults:
   odc-stac's default); `"NONE"` always reads full resolution, as a STACIT mosaic does.
 - `fuse="first"`: in overlaps the first valid pixel in time order wins (odc-stac); `"last"`: the last
   wins (a VRT mosaic, STACIT).
+- `scale=False` (default) returns stored values, as odc-stac 0.5 does (it ignores scale and
+  offset). `scale=True` applies **each item's own** scale/offset before the merge, float32 with
+  NaN for nodata. Scaling after the merge is wrong wherever a group mixes items with different
+  offsets: see [scale and offset](#scale-and-offset).
 - `group_items(items, "solar_day", grid=grid)`: odc-stac's rule, one longitude for the whole
   load (the grid centre) and a whole-hour offset, `int(lon / 15)`. Without `grid`, each item's
   bbox centre. The two can split differently where passes fall near local midnight (150 IW
@@ -75,9 +80,30 @@ What it took:
   geometry itself. Not in Ubuntu's GDAL (no Parquet driver), so this route needs pixi/conda-forge.
 - **odc's solar-day rule** (above).
 
+## Scale and offset
+
+Earth Search `sentinel-2-l2a`, red band, near Hobart (0.05°), December 2021 to February 2022, 10 m
+EPSG:32755 (`cleanroom/arms/scale.sh`, `evidence/scale/`). 23 items in 17 solar-day groups.
+`raster:bands` scale is 0.0001 throughout; offset is 0 for processing baseline 03.01 and -0.1 from
+04.00 (25 January 2022). Late-2021 dates have two items, the original (`_0_`, 03.01, offset 0)
+and a reprocessing (`_1_`, 05.00, offset -0.1), with the same or nearly the same datetime: **6 of
+the 17 groups mix offsets.**
+
+| | vs stacgrid `scale=True` (Python and R) |
+|---|---|
+| Reference: odc loads each item alone (`groupby="id"`), scaled with its own metadata, merged first-valid in odc's order | 0 of 3.9 M pixels differ |
+| odc `groupby="solar_day"` raw, then offset -0.1 for all | 2.29 M differ, by 0.1 |
+| odc raw, then offset 0 for all | 1.60 M differ, by 0.1 |
+
+stacgrid's `scale=False` equals odc's raw load in every pixel, Python and R.
+
+Merge order within a group is **(datetime, id)**, as odc-stac sorts. Two of the duplicate pairs
+have identical datetimes, so the id decides: `_0_` (the older processing) wins. Ordering by
+search order instead changed 449,890 pixels.
+
 Group order: stacgrid orders groups by label, odc-stac by time. They agree here (solar dates,
 EW times, relative orbits 69 and 70 in time order) but needn't for property groups.
 
-Not handled: `raster:bands` scale/offset, multi-band assets, items in several CRSs needing a
+Not handled: multi-band assets, items in several CRSs needing a
 per-item choice. Group labels are the group key (the solar date),
 where odc-stac labels a group with its first item's time.
