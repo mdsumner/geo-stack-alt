@@ -1,0 +1,21 @@
+2019: reflectance 0.004 to 0.568
+2020: reflectance 0.008 to 0.703
+2025: reflectance 0.008 to 0.630
+glider records: 551, of which 2000–2019: 156
+true north: 7.9 degrees clockwise of straight up
+Traceback (most recent call last):
+  File "/work/gdal/presenters/make_examples.py", line 318, in <module>
+    main()
+  File "/work/gdal/presenters/make_examples.py", line 313, in main
+    for path in (before_after(refl, gliders, north), ndvi_change(refl, north), severity_map(gliders, north)):
+                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/work/gdal/presenters/make_examples.py", line 234, in severity_map
+    fesm = gdal.Open(str(DATA / "fire_severity_2019_20.tif")).GetRasterBand(1).ReadAsArray()[::STEP, ::STEP]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/osgeo/gdal.py", line 5285, in ReadAsArray
+    return gdal_array.BandReadAsArray(self, xoff, yoff,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/osgeo/gdal_array.py", line 582, in BandReadAsArray
+    win_xsize = band.XSize
+                ^^^^^^^^^^
+TypeError: in method 'Band_XSize_get', argument 1 of type 'GDALRasterBandShadow *'

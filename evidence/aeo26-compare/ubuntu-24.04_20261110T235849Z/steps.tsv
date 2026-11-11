@@ -1,0 +1,8 @@
+step	seconds	exit
+apt	78.7	0
+versions	0.3	0
+check_orig	0.8	0
+examples_orig	3.6	0
+check_gdal	0.8	0
+examples_gdal	3.0	0
+compare	0.1	0

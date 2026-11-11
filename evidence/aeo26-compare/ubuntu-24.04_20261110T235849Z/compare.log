@@ -1,0 +1,8 @@
+check_values: identical
+make_examples printed numbers: identical
+before_after.png: byte-identical
+fire_severity_and_gliders.png: byte-identical
+ndvi_change.png: byte-identical
+before_after.png (1500, 570) (1500, 570) pixel diff bbox: None
+fire_severity_and_gliders.png (1000, 730) (1000, 730) pixel diff bbox: None
+ndvi_change.png (1040, 660) (1040, 660) pixel diff bbox: None
