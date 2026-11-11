@@ -226,20 +226,36 @@ def asset_href(item, asset: str) -> str:
     return "/vsicurl/" + h if h.startswith(("http://", "https://")) else h
 
 
-def warp_to_grid(src: str, grid: dict, resampling="near", overviews="AUTO") -> tuple[np.ndarray, float | None]:
-    """One source onto the grid. Returns the array and its nodata value."""
+def asset_band(item: dict, name: str) -> tuple[str, int]:
+    """A band name -> (asset, band number): "red" -> ("red", 1), "visual.2" -> ("visual", 2), as
+    odc-stac names the bands of a multi-band asset. An asset whose own key ends in ".<digits>" wins."""
+    if name in item["assets"]:
+        return name, 1
+    a, _, n = name.rpartition(".")
+    if a in item["assets"] and n.isdigit() and int(n) > 0:
+        return a, int(n)
+    raise KeyError(f"{name}: not an asset of {item['id']}")
+
+
+def warp_to_grid(src: str, grid: dict, resampling="near", overviews="AUTO", bands: list[int] | None = None):
+    """One source onto the grid. Returns the array and its nodata value; with `bands` (1-based),
+    a (band, y, x) array and a nodata value per band, all from the one warp."""
     ds = gdal.Warp("", src, format="MEM", dstSRS=grid["crs"], outputBounds=grid["extent"],
                    width=grid["width"], height=grid["height"], resampleAlg=resampling,
-                   overviewLevel=overviews)
-    band = ds.GetRasterBand(1)
-    return band.ReadAsArray(), band.GetNoDataValue()
+                   overviewLevel=overviews, srcBands=bands)
+    if bands is None:
+        band = ds.GetRasterBand(1)
+        return band.ReadAsArray(), band.GetNoDataValue()
+    return ds.ReadAsArray().reshape(len(bands), grid["height"], grid["width"]), \
+        [ds.GetRasterBand(k + 1).GetNoDataValue() for k in range(len(bands))]
 
 
-def scale_offset(item: dict, asset: str) -> tuple[float, float]:
-    """An asset's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[0]),
-    STAC 1.1 "bands"[0] or asset-level "raster:scale"/"raster:offset". (1, 0) when absent."""
+def scale_offset(item: dict, asset: str, band: int = 1) -> tuple[float, float]:
+    """A band's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[band-1]),
+    STAC 1.1 "bands"[band-1] or asset-level "raster:scale"/"raster:offset". (1, 0) when absent."""
     a = item["assets"][asset]
-    b = (a.get("raster:bands") or a.get("bands") or [{}])[0]
+    bl = a.get("raster:bands") or a.get("bands") or []
+    b = bl[band - 1] if band <= len(bl) else {}
     pick = lambda k: b.get(k, b.get(f"raster:{k}", a.get(f"raster:{k}")))  # noqa: E731
     sc, of = pick("scale"), pick("offset")
     return (1.0 if sc is None else float(sc)), (0.0 if of is None else float(of))
@@ -247,7 +263,9 @@ def scale_offset(item: dict, asset: str) -> tuple[float, float]:
 
 def stac_load(groups: dict[str, list[dict]], assets: list[str], grid: dict, resampling="near",
               overviews="AUTO", fuse="first", workers: int = 8, scale: bool = False) -> dict[str, np.ndarray]:
-    """Each asset as a (group, y, x) array. Within a group the items are warped in time order and
+    """Each band as a (group, y, x) array. `assets`: asset keys, or "<asset>.<n>" for band n of a
+    multi-band asset (odc-stac's names; a bare key is band 1). Bands of one asset are read in one
+    warp per item. Within a group the items are warped in time order and
     merged: fuse="first" keeps the first valid pixel (odc-stac), "last" the last (a VRT mosaic).
     overviews: "AUTO" lets the warp read a coarser overview when downsampling (gdalwarp and
     odc-stac default), "NONE" always reads full resolution (as through a STACIT mosaic).
@@ -256,27 +274,34 @@ def stac_load(groups: dict[str, list[dict]], assets: list[str], grid: dict, resa
     scale: False returns the stored values (as odc-stac 0.5 does). True applies each item's own
     scale and offset (scale_offset()) before merging, as float32 with NaN for nodata: items in one
     group can carry different offsets (Sentinel-2 processing baselines), so scaling after the
-    merge can be wrong for part of a group. Computed in float64, then rounded to float32."""
-    jobs = [(asset, g, it) for asset in assets for g, members in enumerate(groups.values()) for it in members]
-    warp = lambda job: warp_to_grid(asset_href(job[2], job[0]), grid, resampling, overviews)  # noqa: E731
-    out, acc = {}, {}
+    merge can be wrong for part of a group. Computed in float64, then rounded to float32.
+    Nodata is the file's: odc-stac takes it from the STAC metadata instead, and has none for an
+    asset without raster:bands or bands (so every pixel, nodata included, counts as valid)."""
+    first = next(it for members in groups.values() for it in members)
+    req: dict[str, list[tuple[str, int]]] = {}  # asset -> [(output name, band)]
+    for name in assets:
+        a, b = asset_band(first, name)
+        req.setdefault(a, []).append((name, b))
+    jobs = [(asset, g, it) for asset in req for g, members in enumerate(groups.values()) for it in members]
+    warp = lambda job: warp_to_grid(asset_href(job[2], job[0]), grid, resampling, overviews,  # noqa: E731
+                                    bands=[b for _, b in req[job[0]]])
+    acc = {}
     with ThreadPoolExecutor(max(1, workers)) as ex:
-        for (asset, g, it), (a, nd) in zip(jobs, ex.map(warp, jobs) if workers > 1 else map(warp, jobs)):
-            valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
-            if scale:
-                sc, of = scale_offset(it, asset)
-                a = (a.astype("float64") * sc + of).astype("float32")
-                a[~valid] = np.nan
-                nd = float("nan")
-            if (asset, g) not in acc:
-                a = a.copy()
-                a[~valid] = np.nan if nd is None else nd
-                acc[asset, g] = (a, valid.copy())
-            else:
-                m, mv = acc[asset, g]
-                take = valid & ~mv if fuse == "first" else valid
-                m[take] = a[take]
-                mv |= valid
-    for asset in assets:
-        out[asset] = np.stack([acc[asset, g][0] for g in range(len(groups))])
-    return out
+        for (asset, g, it), (arr, nds) in zip(jobs, ex.map(warp, jobs) if workers > 1 else map(warp, jobs)):
+            for (name, b), a, nd in zip(req[asset], arr, nds):
+                valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
+                if scale:
+                    sc, of = scale_offset(it, asset, b)
+                    a = (a.astype("float64") * sc + of).astype("float32")
+                    a[~valid] = np.nan
+                    nd = float("nan")
+                if (name, g) not in acc:
+                    a = a.copy()
+                    a[~valid] = np.nan if nd is None else nd
+                    acc[name, g] = (a, valid.copy())
+                else:
+                    m, mv = acc[name, g]
+                    take = valid & ~mv if fuse == "first" else valid
+                    m[take] = a[take]
+                    mv |= valid
+    return {name: np.stack([acc[name, g][0] for g in range(len(groups))]) for name in assets}

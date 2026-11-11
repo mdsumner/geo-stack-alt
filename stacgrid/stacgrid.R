@@ -207,24 +207,40 @@ asset_href <- function(item, asset) {
   h
 }
 
-warp_to_grid <- function(src, grid, resampling = "near", overviews = "AUTO") {
+# A band name -> list(asset, band): "red" -> ("red", 1), "visual.2" -> ("visual", 2), as odc-stac
+# names the bands of a multi-band asset. An asset whose own key ends in ".<digits>" wins.
+asset_band <- function(item, name) {
+  if (!is.null(item$assets[[name]])) return(list(asset = name, band = 1L))
+  m <- regmatches(name, regexec("^(.+)\\.([0-9]+)$", name))[[1]]
+  if (length(m) == 3 && !is.null(item$assets[[m[2]]]) && as.integer(m[3]) > 0)
+    return(list(asset = m[2], band = as.integer(m[3])))
+  stop(name, ": not an asset of ", item$id)
+}
+
+# One source onto the grid: list(values, nodata, type), values a list with one vector per band
+# when `bands` (1-based) is given, all from the one warp.
+warp_to_grid <- function(src, grid, resampling = "near", overviews = "AUTO", bands = NULL) {
   # pid + tempfile(): unique per forked worker, and leaves the R random stream alone
   tf <- sprintf("/vsimem/stacgrid_%d_%s.tif", Sys.getpid(), basename(tempfile("")))
   on.exit(gdalraster::vsi_unlink(tf))
   gdalraster::warp(src, tf, t_srs = grid$crs, quiet = TRUE,
                    cl_arg = c("-te", grid$extent, "-ts", grid$width, grid$height,
-                              "-r", resampling, "-ovr", overviews))
+                              "-r", resampling, "-ovr", overviews,
+                              if (length(bands)) as.vector(rbind("-srcband", bands))))
   ds <- new(gdalraster::GDALRaster, tf)
   on.exit(ds$close(), add = TRUE, after = FALSE)
-  v <- ds$read(1, 0, 0, grid$width, grid$height, grid$width, grid$height)
-  list(values = v, nodata = ds$getNoDataValue(1), type = ds$getDataTypeName(1))
+  k <- if (is.null(bands)) 1L else seq_along(bands)
+  v <- lapply(k, function(b) ds$read(b, 0, 0, grid$width, grid$height, grid$width, grid$height))
+  list(values = if (is.null(bands)) v[[1]] else v,
+       nodata = vapply(k, function(b) ds$getNoDataValue(b), 0), type = ds$getDataTypeName(1))
 }
 
-# An asset's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[[1]]),
-# STAC 1.1 "bands"[[1]] or asset-level "raster:scale"/"raster:offset". c(1, 0) when absent.
-scale_offset <- function(item, asset) {
+# A band's scale and offset from its STAC metadata: raster extension v1 ("raster:bands"[[band]]),
+# STAC 1.1 "bands"[[band]] or asset-level "raster:scale"/"raster:offset". c(1, 0) when absent.
+scale_offset <- function(item, asset, band = 1L) {
   a <- item$assets[[asset]]
-  b <- if (length(a[["raster:bands"]])) a[["raster:bands"]][[1]] else if (length(a$bands)) a$bands[[1]] else list()
+  bl <- if (length(a[["raster:bands"]])) a[["raster:bands"]] else if (length(a$bands)) a$bands else list()
+  b <- if (band <= length(bl)) bl[[band]] else list()
   pick <- function(k) {
     for (v in list(b[[k]], b[[paste0("raster:", k)]], a[[paste0("raster:", k)]])) if (!is.null(v)) return(as.numeric(v))
     NULL
@@ -232,44 +248,53 @@ scale_offset <- function(item, asset) {
   c(if (is.null(sc <- pick("scale"))) 1 else sc, if (is.null(of <- pick("offset"))) 0 else of)
 }
 
-# Each asset as an array [x, y, group] (x fastest, rows top-down, as GDAL reads).
+# Each band as an array [x, y, group] (x fastest, rows top-down, as GDAL reads).
+# assets: asset keys, or "<asset>.<n>" for band n of a multi-band asset (odc-stac's names; a bare
+# key is band 1). Bands of one asset are read in one warp per item.
 # workers: warps run in that many forked processes (parallel::mclapply; serial on Windows).
 # Results are merged in item order whatever order they finish in, so pixels don't depend on it.
 # scale: FALSE returns the stored values (as odc-stac 0.5). TRUE applies each item's own scale and
 # offset (scale_offset()) before merging, NA for nodata, written as Float32: items in one group can
 # carry different offsets (Sentinel-2 processing baselines), so scaling after the merge can be
 # wrong for part of a group.
+# Nodata is the file's: odc-stac takes it from the STAC metadata instead, and has none for an asset
+# without raster:bands or bands (so every pixel, nodata included, counts as valid).
 stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AUTO", fuse = "first",
                       workers = 8L, scale = FALSE) {
-  jobs <- do.call(rbind, lapply(assets, function(asset) do.call(rbind, lapply(seq_along(groups), function(g)
+  first <- groups[[which(lengths(groups) > 0)[1]]][[1]]
+  ab <- lapply(assets, asset_band, item = first)
+  req <- split(seq_along(assets), vapply(ab, `[[`, "", "asset"))  # asset -> positions in `assets`
+  req <- req[unique(vapply(ab, `[[`, "", "asset"))]
+  jobs <- do.call(rbind, lapply(names(req), function(asset) do.call(rbind, lapply(seq_along(groups), function(g)
     data.frame(asset = asset, g = g, i = seq_along(groups[[g]]),
                src = vapply(groups[[g]], asset_href, "", asset = asset))))))
-  warp <- function(src) warp_to_grid(src, grid, resampling, overviews)
+  bands_of <- lapply(req, function(k) vapply(ab[k], `[[`, 0L, "band"))
+  warp <- function(j) warp_to_grid(jobs$src[j], grid, resampling, overviews, bands = bands_of[[jobs$asset[j]]])
   res <- if (workers > 1L && .Platform$OS.type == "unix") {
-    parallel::mclapply(jobs$src, warp, mc.cores = workers, mc.preschedule = FALSE)
-  } else lapply(jobs$src, warp)
+    parallel::mclapply(seq_len(nrow(jobs)), warp, mc.cores = workers, mc.preschedule = FALSE)
+  } else lapply(seq_len(nrow(jobs)), warp)
   # mclapply returns a try-error for a failed warp, NULL for a worker that died
   bad <- vapply(res, function(r) is.null(r) || inherits(r, "try-error"), NA)
   if (any(bad)) stop("warp failed: ", jobs$src[bad][1], ": ", format(res[bad][[1]]))
   out <- list()
-  for (asset in assets) {
+  for (asset in names(req)) for (k in seq_along(req[[asset]])) {
+    name <- assets[req[[asset]][k]]; band <- bands_of[[asset]][k]
     arr <- array(NA_real_, c(grid$width, grid$height, length(groups)))
     for (g in seq_along(groups)) {
       acc <- NULL
       sel <- which(jobs$asset == asset & jobs$g == g)
       for (j in sel) {
-        w <- res[[j]]
-        a <- w$values
-        valid <- if (is.na(w$nodata)) !is.na(a) else !is.na(a) & a != w$nodata
+        a <- res[[j]]$values[[k]]; nodata <- res[[j]]$nodata[k]; type <- res[[j]]$type
+        valid <- if (is.na(nodata)) !is.na(a) else !is.na(a) & a != nodata
         if (scale) {
-          so <- scale_offset(groups[[g]][[jobs$i[j]]], asset)
+          so <- scale_offset(groups[[g]][[jobs$i[j]]], asset, band)
           a <- a * so[1] + so[2]
           a[!valid] <- NA
-          w$nodata <- NA_real_; w$type <- "Float32"
+          nodata <- NA_real_; type <- "Float32"
         }
         if (is.null(acc)) {
           acc <- a; accv <- valid
-          acc[!valid] <- w$nodata
+          acc[!valid] <- nodata
         } else {
           take <- if (fuse == "first") valid & !accv else valid
           acc[take] <- a[take]
@@ -278,10 +303,11 @@ stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AU
       }
       arr[, , g] <- acc
     }
-    attr(arr, "type") <- w$type
-    attr(arr, "nodata") <- w$nodata
-    out[[asset]] <- arr
+    attr(arr, "type") <- type
+    attr(arr, "nodata") <- nodata
+    out[[name]] <- arr
   }
+  out <- out[assets]
   attr(out, "groups") <- names(groups)
   attr(out, "grid") <- grid
   out

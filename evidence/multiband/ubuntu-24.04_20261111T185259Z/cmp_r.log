@@ -1,0 +1,64 @@
+{
+ "same_items": true,
+ "n_items": [
+  46,
+  46
+ ],
+ "same_gt": true,
+ "labels_equal": true,
+ "bands": {
+  "visual.1": {
+   "dtype": [
+    "uint8",
+    "uint8"
+   ],
+   "n_differ": 0,
+   "of": 27324440
+  },
+  "visual.2": {
+   "dtype": [
+    "uint8",
+    "uint8"
+   ],
+   "n_differ": 0,
+   "of": 27324440
+  },
+  "visual.3": {
+   "dtype": [
+    "uint8",
+    "uint8"
+   ],
+   "n_differ": 0,
+   "of": 27324440
+  },
+  "visual": {
+   "dtype": [
+    "uint8",
+    "uint8"
+   ],
+   "n_differ": 0,
+   "of": 27324440
+  },
+  "red": {
+   "dtype": [
+    "uint16",
+    "uint16"
+   ],
+   "n_differ": 0,
+   "of": 27324440
+  }
+ },
+ "odc_asis_vs_raster_bands": {
+  "dtype": [
+   "float32",
+   "uint8"
+  ],
+  "n_differ": 160,
+  "of": 27324440,
+  "asis_nan_where_0": 160,
+  "asis_0_where_data": 0,
+  "data_values_differ": 0,
+  "groups_affected": 4,
+  "groups": 17
+ }
+}

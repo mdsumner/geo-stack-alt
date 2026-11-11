@@ -12,7 +12,8 @@ and R (`stacgrid.R`: gdalraster, jsonlite; curl for POST searches). The same fun
 | A grid's outline in lon/lat, to search with | `grid_footprint()` | `grid_footprint()` |
 | Group: `"solar_day"`, `"time"`, a property, or a function | `group_items()` | `group_items()` |
 | Warp each group's items onto the grid and merge (in parallel; `scale=` applies each item's scale/offset) | `stac_load()` | `stac_load()` |
-| An asset's `raster:bands` scale and offset | `scale_offset()` | `scale_offset()` |
+| An asset's `raster:bands` scale and offset (per band) | `scale_offset()` | `scale_offset()` |
+| A band name to (asset, band): `"red"`, `"visual.2"` | `asset_band()` | `asset_band()` |
 
 It's the layer osgeo.gdal lacks for STAC time stacks, which odc-stac's `load()` provides. The two
 choices that change pixels are arguments, not hidden defaults:
@@ -104,6 +105,32 @@ search order instead changed 449,890 pixels.
 Group order: stacgrid orders groups by label, odc-stac by time. They agree here (solar dates,
 EW times, relative orbits 69 and 70 in time order) but needn't for property groups.
 
-Not handled: multi-band assets, items in several CRSs needing a
+## Multi-band assets
+
+Bands are named as odc-stac names them: `"visual.2"` is band 2 of asset `visual`, and a bare
+`"visual"` is band 1. The bands asked for from one asset come from one warp per item
+(`gdalwarp -srcband`), each merged and returned under its own name. Nodata is the file's.
+
+Earth Search `sentinel-2-l2a` `visual` (TCI.tif: 3 bands, uint8, nodata 0 in the file), west of
+Hobart across the 55GDN/55GEN tile overlap, December 2021 to February 2022, 10 m EPSG:32755
+(`cleanroom/arms/multiband.sh`, `evidence/multiband/`). 46 items, 17 groups, 562 x 2860.
+
+The asset describes its bands in `eo:bands` only. odc-stac 0.5.3 counts bands from
+`raster:bands` or STAC 1.1 `bands`, so it sees one band: `"visual"` loads band 1 as float32 with
+no nodata, and `"visual.2"`/`"visual.3"` raise `KeyError: ('visual', 2)`. (Here that changed no
+data pixel: the AOI's TCI has no zeros inside the footprints, so treating 0 as data never won
+a merge. The 160 pixels outside every footprint came out NaN instead of 0.) The reference adds
+`raster:bands: [{nodata: 0, data_type: uint8}] * 3` to each item before `odc.stac.load`.
+
+| `["visual.1", "visual.2", "visual.3", "visual", "red"]` | vs that odc reference |
+|---|---|
+| stacgrid Python | 0 of 27.3 M pixels differ, each band; uint8 (red uint16) |
+| stacgrid R | 0 of 27.3 M, each band |
+
+stacgrid doesn't need the band count, because it reads the file. It doesn't map `eo:bands` names
+(`"green"`) to `visual.2` either. odc doesn't on Earth Search either: it skips aliases that
+equal asset keys, and `red`/`green`/`blue` are 1-band assets.
+
+Not handled: items in several CRSs needing a
 per-item choice. Group labels are the group key (the solar date),
 where odc-stac labels a group with its first item's time.

@@ -220,6 +220,12 @@ Earth Search Sentinel-2 across the 04.00 baseline change, 6 of 17 solar-day grou
 to 2.3 M of 3.9 M pixels came out 0.1 off. `stac_load(..., scale=True)` scales each item before the
 merge, equal in every pixel to a per-item odc reference (`evidence/scale/`).
 
+**Multi-band assets.** `stac_load(groups, ["visual.1", "visual.2", "visual.3"], grid)` reads
+bands of one asset in one warp per item, using odc-stac's names. On Earth Search's 3-band TCI it
+equals odc in every pixel, Python and R. To get that reference, odc needed `raster:bands` added
+to the items first: the asset lists its bands in `eo:bands` only, so odc-stac 0.5.3 sees one
+float32 band with no nodata, and `visual.2` raises KeyError (`evidence/multiband/`).
+
 On GA's fast-ice notebooks it equals the notebooks' odc-stac loads in every pixel too
 (details in [`stacgrid/README.md`](stacgrid/README.md)). Getting there exposed odc-stac's
 solar-day rule: one longitude for the whole load (the grid centre) and whole hours, which
@@ -344,6 +350,7 @@ MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-16 workers
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice notebook loads (pixi)
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh scale      # raster:bands scale/offset (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh multiband  # multi-band assets (pixi)
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -377,5 +384,5 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- `stacgrid`: the fast-ice processing beyond the loads (NormCovar); multi-band assets.
+- `stacgrid`: the fast-ice processing beyond the loads (NormCovar).
 - Run the project ports on Nectar, Setonix and a laptop.

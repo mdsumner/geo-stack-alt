@@ -1,0 +1,2 @@
+Warning 1: Field sarard:speckle_filter_window of unhandled type list<element: null> ignored
+{"api_items": 15, "api_groups": ["69", "70"], "api_shape": [2, 1627, 1702], "pq_items": 1, "pq_shape": [1, 1627, 1702], "s": 7.2}
