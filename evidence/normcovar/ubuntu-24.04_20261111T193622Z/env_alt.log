@@ -1,0 +1,40 @@
+✔ Created /work/alt/pixi.toml
+✔ Added python=3.13
+✔ Added numpy >=2.5.4,<3
+✔ Added scipy >=1.18.1,<2
+✔ Added gdal >=3.13.3,<4
+✔ Added libgdal >=3.13.3,<4
+✔ Added libgdal-arrow-parquet >=3.13.3,<4
+✔ Added r-base >=4.5.3,<4.6
+✔ Added r-gdalraster >=2.7.0,<3
+✔ Added r-jsonlite >=2.0.0,<3
+✔ Added r-curl >=8.0.0,<9
+trying URL 'https://cloud.r-project.org/src/contrib/ximage_0.1.0.tar.gz'
+Content type 'application/x-gzip' length 1454530 bytes (1.4 MB)
+==================================================
+downloaded 1.4 MB
+
+* installing *source* package ‘ximage’ ...
+** this is package ‘ximage’ version ‘0.1.0’
+** package ‘ximage’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** data
+*** moving datasets to lazyload DB
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (ximage)
+
+The downloaded source packages are in
+	‘/tmp/Rtmph5R6r3/downloaded_packages’
+Updating HTML index of packages in '.Library'
+Making 'packages.html' ... done
+Loading required namespace: ximage

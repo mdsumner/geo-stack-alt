@@ -1,0 +1,23 @@
+✔ Created /work/latest/pixi.toml
+✔ Added python=3.13
+✔ Added gdal >=3.13.3,<4
+✔ Added rasterio >=1.5.2,<2
+✔ Added odc-stac >=0.5.3,<0.6
+✔ Added odc-geo >=0.5.4,<0.6
+✔ Added xarray >=2026.9.0,<2027
+✔ Added numpy >=2.5.4,<3
+✔ Added scipy >=1.18.1,<2
+✔ Added pandas >=3.1.1,<4
+✔ Added rioxarray<0.23
+✔ Added geopandas >=1.2.0,<2
+✔ Added pystac-client >=0.9.1,<0.10
+✔ Added botocore >=1.43.127,<2
+✔ Added dask >=2026.8.0,<2027
+✔ Added loguru >=0.7.3,<0.8
+✔ Added pyyaml >=6.0.3,<7
+✔ Added matplotlib-base >=3.11.2,<4
+✔ Added pyarrow >=26.0.1,<27
+ WARN The package `odc-stac==0.5.3` does not have an extra named `botocore`
+✔ Added stac-geoparquet>=0.8,<0.9
+✔ Added normalized-covariance @ git+https://github.com/jlo031/normalized_covariance@d6843d2a31b57bb7e42ca531aff5077ea4a56fe4
+Added these as pypi-dependencies.

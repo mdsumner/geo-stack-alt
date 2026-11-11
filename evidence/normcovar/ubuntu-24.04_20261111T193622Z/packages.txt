@@ -1,0 +1,4 @@
+ref: python=3.13 gdal=3.12.3 libgdal-core=3.12.3 rasterio=1.5.0 odc-stac=0.5.2 odc-geo=0.5.1 xarray=2026.4.0 numpy=2.5.0 scipy=1.18.0 pandas=3.0.3 rioxarray=0.22.0 geopandas pystac-client botocore dask loguru pyyaml matplotlib-base pyarrow + pypi stac-geoparquet, normalized-covariance @ git+https://github.com/jlo031/normalized_covariance@d6843d2a31b57bb7e42ca531aff5077ea4a56fe4
+mid: python=3.13 gdal=3.13.3 libgdal-core=3.13.3 rasterio=1.5.2 odc-stac=0.5.2 odc-geo=0.5.1 xarray=2026.4.0 numpy=2.5.0 scipy=1.18.0 pandas=3.0.3 rioxarray=0.22.0 geopandas pystac-client botocore dask loguru pyyaml matplotlib-base pyarrow + same pypi
+latest: python=3.13 gdal rasterio odc-stac odc-geo xarray numpy scipy pandas rioxarray<0.23 geopandas pystac-client botocore dask loguru pyyaml matplotlib-base pyarrow + same pypi
+alt: python=3.13 numpy scipy gdal libgdal libgdal-arrow-parquet r-base r-gdalraster r-jsonlite r-curl + CRAN ximage

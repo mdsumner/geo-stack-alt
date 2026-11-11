@@ -1,0 +1,18 @@
+{
+ "gdal": "3.12.3",
+ "rasterize_new_output_init_None_nodata": 0.0,
+ "rasterize_new_output_init_0_nodata": 0.0,
+ "landmask_zeros": 1045457,
+ "warp_dstnodata_None": {
+  "zeros": 10463,
+  "ones": 13225,
+  "messages": []
+ },
+ "warp_dstnodata_0": {
+  "zeros": 0,
+  "ones": 23688,
+  "messages": [
+   "Value 0 in the source dataset has been changed to 1 in the destination dataset to avoid being treated as NoData. To avoid this, select a different NoData value for the destination dataset."
+  ]
+ }
+}

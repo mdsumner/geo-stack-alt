@@ -1,0 +1,31 @@
+[workspace]
+channels = ['conda-forge']
+name = "latest"
+platforms = ['linux-64']
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.13.*"
+gdal = ">=3.13.3,<4"
+rasterio = ">=1.5.2,<2"
+odc-stac = ">=0.5.3,<0.6"
+odc-geo = ">=0.5.4,<0.6"
+xarray = ">=2026.9.0,<2027"
+numpy = ">=2.5.4,<3"
+scipy = ">=1.18.1,<2"
+pandas = ">=3.1.1,<4"
+rioxarray = "<0.23"
+geopandas = ">=1.2.0,<2"
+pystac-client = ">=0.9.1,<0.10"
+botocore = ">=1.43.127,<2"
+dask = ">=2026.8.0,<2027"
+loguru = ">=0.7.3,<0.8"
+pyyaml = ">=6.0.3,<7"
+matplotlib-base = ">=3.11.2,<4"
+pyarrow = ">=26.0.1,<27"
+
+[pypi-dependencies]
+stac-geoparquet = ">=0.8, <0.9"
+normalized-covariance = { git = "https://github.com/jlo031/normalized_covariance", rev = "d6843d2a31b57bb7e42ca531aff5077ea4a56fe4" }

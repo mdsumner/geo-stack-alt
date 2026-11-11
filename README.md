@@ -5,7 +5,7 @@ tests one candidate against that default, from a clean machine, and keeps the ev
 
 **Status (2026-11-11):** install paths compared on `ubuntu:24.04` and `26.04`; four real
 projects (Sentinel-1 and Sentinel-2) reproduced exactly on the alternative stack; one helper
-(`stacgrid/`, Python and R) for STAC time stacks, which also reproduces GA's fast-ice notebook loads. Not yet run on Nectar, Setonix or a laptop.
+(`stacgrid/`, Python and R) for STAC time stacks, which also reproduces GA's fast-ice notebook loads, and a port of its NormCovar processing. Not yet run on Nectar, Setonix or a laptop.
 
 ## The stance (draft)
 
@@ -158,6 +158,7 @@ code, not from two GDAL builds.
 | … its figures, in R | The 3 example figures (false colour, NDVI change, severity with gliders) with ximage, gdalraster, base graphics | Same printed numbers (reflectance ranges, glider counts, true-north angle); decimated severity pixels identical (0 of 1,000,000 differ); same figures, drawn by a different device | `evidence/aeo26-figure/` |
 | ga-sar-ice (GA tutorial) | `odc.stac.load` of 45 IW bursts, solar-day groups, 200 m EPSG:3031 | Plain `osgeo.gdal`: **every pixel equal**, but ~90 lines against ~15. With `stacgrid` (below): ~10 lines in Python or R, every pixel equal | `evidence/ga-sar-ice-compare/`, `evidence/stacgrid/` |
 | … GA's fast-ice notebooks | `sentinel_1_load_demo` and `fast_ice_from_stac_xarray`: EW from STAC-GeoParquet, IW from the API (`intersects=`), grouped by time, solar day and relative orbit, 40 m EPSG:3031, up to 150 items | With `stacgrid`, Python and R: same items, grids and groups, **0 of 217 M pixels differ**. On pixi only: Ubuntu's GDAL has no Parquet driver | `evidence/fast-ice/` |
+| … and its NormCovar | `fast_ice_from_stac_xarray` sections 5-10: dB, 12-day pairs, NormCovar (3 windows), RGB, resample /10, SCAR coastline landmask, the SAM input (normalized_covariance d6843d2; SAM/SVM not run) | Python port (stacgrid, numpy, scipy, osgeo.gdal): **every product equal** to the notebook at fast-ice's locked versions. R port (gdalraster, base R, ximage figure): equal resample and landmask; float32 vs double moves 51 of 7.1 M RGB values by 1. The notebook itself breaks on today's resolve (below) | `evidence/normcovar/` |
 
 Line counts for the ports: tasmania 415 → 459, check_values 181 → 199, make_examples 267 → 277.
 The extra lines are the two helpers rasterio hides: an `osr` point/bounds transform with x/y
@@ -232,6 +233,40 @@ solar-day rule: one longitude for the whole load (the grid centre) and whole hou
 splits differently from a per-item longitude when passes fall near local midnight (150 items at
 167°E: 30 groups against 60).
 
+### fast-ice NormCovar
+
+The notebook's NormCovar steps are numpy/scipy arithmetic plus two geo operations: a resample of
+the RGB and landmask to 1/10 (odc-geo `xr_reproject`, through rasterio) and a coastline
+rasterize (geopandas + `rasterio.features.rasterize`). On the alt stack that's `gdal.Warp` and
+`gdal.Rasterize` (gdalraster's `warp()` and `rasterize()` in R), with stacgrid loading only the
+two images of the pair. Run against three builds of the notebook's own stack
+(`evidence/normcovar/`):
+
+| Notebook stack | Result |
+|---|---|
+| fast-ice's lock (odc-stac 0.5.2, odc-geo 0.5.1, xarray 2026.4.0, rasterio 1.5.0, GDAL 3.12.3) | Runs; the Python port equals it in every product (loads, NormCovar, RGB, resampled RGB, landmasks, SAM input) |
+| The lock with today's rasterio 1.5.2 / GDAL 3.13.3 | Runs, but the resampled landmask is all 1, so **the SAM input is entirely 0** |
+| Resolved today within fast-ice's ranges (odc-stac 0.5.3, odc-geo 0.5.4, xarray 2026.9.0) | Fails in section 8: `ValueError: cannot convert float NaN to integer` |
+
+Neither failure is a bug in one package. Each comes from how the versions combine:
+
+- **Section 8 crash.** odc-stac 0.5.3 marks its float32 load `nodata: nan` (0.5.2 set no attrs).
+  xarray carries that through `10 * log10(...)`. NormCovar copies the attrs onto its uint8 RGB.
+  odc-geo then can't make a uint8 fill value from NaN.
+- **Blank SAM input.** For a uint8 resample with `dst_nodata=None`, odc-geo still passes its fill
+  value 0 to rasterio as `dst_nodata`. rasterio 1.5.0 didn't hand it on to the warp, but 1.5.1
+  and later do. GDAL's warper then writes every valid 0 as 1 ("changed to 1 in the destination
+  dataset to avoid being treated as NoData"). Its own `gdal.Warp(dstNodata=0)` does the same on
+  3.12.3 and 3.13.3. So the 0/1 landmask becomes all land, and the masked RGB becomes all 0.
+  The RGB resample changes too, in 5 pixels.
+
+The ports warp with no destination nodata, which is what the locked notebook effectively does.
+`NC_ODC_NODATA=1` makes them reproduce the rasterio 1.5.1+ result exactly, in Python and R.
+
+On the GDAL side, `gdal_rasterize` sets NoData = 0 on any output it creates, with or without
+`-init`. For a 0/1 mask, that makes water nodata (R then reads it as NA). The R port therefore
+burns into an existing zero raster, as the Python port does into MEM.
+
 ### Traps met on the way
 
 - **`osgeo.gdal` dataset lifetime.** `gdal.Open(p).GetRasterBand(1).ReadAsArray()` in one line
@@ -255,6 +290,10 @@ splits differently from a per-item longitude when passes fall near local midnigh
 - **DEA's STAC API takes POST without advertising it**, and `intersects` only by POST.
 - **fast-ice's GeoParquet URL** (`data.dev.dea.ga.gov.au`) returned 504; the S3 copy has the
   sha256 in fast-ice's registry.
+- **fast-ice resolves to a stack that fails.** Its declared ranges (`odc-stac>=0.5.2,<0.6`,
+  `rasterio>=1.3`) now resolve to versions that break NormCovar or blank its output (above). Its
+  `pixi.lock` works, so install with `pixi install --locked`. normalized_covariance pins
+  `rioxarray<0.23`.
 - **S3 listing from containers** timed out once (about 9,800 prefixes from 16 threads). Shared
   code, not a stack difference; the tasmania runs reuse a saved burst index.
 
@@ -351,6 +390,7 @@ MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-1
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice notebook loads (pixi)
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh scale      # raster:bands scale/offset (pixi)
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh multiband  # multi-band assets (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh normcovar  # fast-ice NormCovar, 3 notebook stacks vs ports
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -364,7 +404,7 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 | `cleanroom/run.sh` | Runs one arm in a fresh container, keeps logs and timings |
 | `cleanroom/arms/*.sh` | One script per install path or experiment |
 | `cleanroom/probe/` | The shared probe: `probe_gdal.py`, `probe_rasterio.py`, `probe.R`, `common.py` |
-| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original; `fast-ice/` has the notebooks' load cells as scripts |
+| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original; `fast-ice/` has the notebooks' load cells as scripts; `normcovar/` their NormCovar cells and the Python and R ports |
 | `stacgrid/` | STAC items → groups → grid, Python and R |
 | `evidence/` | Outputs of each run (`.tif` files are not kept in git: re-run to get them) |
 | `findings/` | Write-ups |
@@ -384,5 +424,5 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- `stacgrid`: the fast-ice processing beyond the loads (NormCovar).
+- fast-ice SAM/SVM on the port's SAM input (needs torch; out of this repo's scope so far).
 - Run the project ports on Nectar, Setonix and a laptop.

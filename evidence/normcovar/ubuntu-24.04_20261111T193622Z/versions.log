@@ -1,0 +1,24 @@
+ref
+gdal 3.12.3 numpy 2.5.0 scipy 1.18.0
+mid
+gdal 3.13.3 numpy 2.5.0 scipy 1.18.0
+latest
+gdal 3.13.3 numpy 2.5.4 scipy 1.18.1
+alt
+gdal 3.13.3 numpy 2.5.4 scipy 1.18.1
+odc-stac 0.5.2 odc-geo 0.5.1 xarray 2026.4.0 rasterio 1.5.0 3.12.3 pandas 3.0.3
+odc-stac 0.5.2 odc-geo 0.5.1 xarray 2026.4.0 rasterio 1.5.2 3.13.3 pandas 3.0.3
+odc-stac 0.5.3 odc-geo 0.5.4 xarray 2026.9.0 rasterio 1.5.2 3.13.3 pandas 3.1.1
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_CmbTable” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALAlg” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALRaster” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_GDALVector” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_RunningStats” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “Rcpp_VSIFile” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+gdalraster 2.7.0 ximage 0.1.0 GDAL 3.13.3 "Iowa City", released 2026/08/13 

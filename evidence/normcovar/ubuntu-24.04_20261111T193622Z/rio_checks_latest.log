@@ -1,0 +1,1 @@
+{"rasterio": "1.5.2", "gdal": "3.13.3", "dst_nodata_None": {"zeros": 50, "ones": 50}, "dst_nodata_0": {"zeros": 0, "ones": 100}}
