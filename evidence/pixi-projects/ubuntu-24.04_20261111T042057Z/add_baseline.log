@@ -1,0 +1,5 @@
+✔ Added rasterio >=1.5.2,<2
+✔ Added shapely >=2.2.0,<3
+✔ Added odc-stac >=0.5.3,<0.6
+✔ Added pystac-client >=0.9.1,<0.10
+✔ Added botocore >=1.43.127,<2

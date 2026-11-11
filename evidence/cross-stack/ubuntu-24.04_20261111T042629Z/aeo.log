@@ -1,0 +1,9 @@
+check_values: identical
+make_examples printed numbers: identical
+R printed numbers: identical
+examples_gdal before_after.png (1500, 570) (1500, 570) pixels differing: 539784 bbox: (24, 17, 1476, 565)
+examples_gdal fire_severity_and_gliders.png (1000, 730) (1000, 730) pixels differing: 83786 bbox: (37, 29, 920, 723)
+examples_gdal ndvi_change.png (1040, 660) (1040, 660) pixels differing: 401552 bbox: (44, 13, 997, 654)
+r before_after.png (1500, 570) (1500, 570) pixels differing: 19239 bbox: (79, 5, 1350, 565)
+r fire_severity_and_gliders.png (1000, 730) (1000, 730) pixels differing: 16522 bbox: (104, 15, 889, 721)
+r ndvi_change.png (1040, 660) (1040, 660) pixels differing: 14018 bbox: (90, 10, 917, 653)

@@ -1,0 +1,2 @@
+stack: python numpy gdal libgdal matplotlib-base pillow r-base r-gdalraster r-jsonlite
+baseline: rasterio shapely odc-stac pystac-client botocore

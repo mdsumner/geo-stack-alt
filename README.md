@@ -162,6 +162,31 @@ Line counts for the ports: tasmania 415 → 459, check_values 181 → 199, make_
 The extra lines are the two helpers rasterio hides: an `osr` point/bounds transform with x/y
 axis order, and an OGR rasterize.
 
+### The same ports on pixi
+
+Everything above was repeated in one pixi env on a bare `ubuntu:24.04`: conda-forge GDAL 3.13.3
+shared by osgeo.gdal, rasterio 1.5.2, odc-stac 0.5.3 and R (gdalraster 2.7.0, ximage from CRAN),
+with Python 3.15, numpy 2.5 and matplotlib 3.11. The originals (rasterio, odc-stac) were installed
+in a separate `pixi add`, so the alt stack's own install is the first add. Then the outputs were
+set against the apt runs.
+
+| | Within the pixi env (original vs port, or Python vs R) | pixi (GDAL 3.13.3) vs apt (3.8.4) |
+|---|---|---|
+| tasmania bursts, mosaics | 0 pixels differ | bursts: 0 differ. Mosaics: 1 pixel of 593,064 in one band, by 5.8e-11 |
+| tasmania stats, Python vs R | equal to float32 rounding | |
+| aeo26 answer table, printed numbers | identical | identical, Python and R |
+| aeo26 PNGs | original vs port byte-identical; R severity pixels 0 of 1,000,000 differ | same content; rendering differs (matplotlib 3.6.3 vs 3.11.2 image resampling; R fonts) |
+| ga-sar-ice: odc, plain GDAL, stacgrid Python and R | 0 pixels differ | 0 differ, each loader |
+| ga-sar-ice: STACIT vs no-overview last-wins warp | 0 differ | 0 differ against apt 26.04 (GDAL 3.12.2); it can't run on 3.8.4 |
+
+Install, from a bare image: apt curl 16-27 s, pixi 2-4 s, the alt stack (`python numpy gdal
+libgdal matplotlib-base pillow r-base r-gdalraster r-jsonlite`) 5-6 s, ximage 3 s, the
+baseline extras 4 s; 2.2 GB env. These workloads didn't show the version-dependent warp
+difference in the finding above (not investigated why). The one mosaic pixel is probably
+numpy (1.26 vs 2.5) in the mosaic arithmetic, since every input burst is identical; the PNG
+differences are the plotting libraries.
+(`evidence/pixi-projects/`, `evidence/cross-stack/`)
+
 ### STAC time stacks: odc-stac, STACIT and `stacgrid`
 
 odc-stac does more than read: it searches, snaps a grid, groups by solar day and merges
@@ -289,9 +314,13 @@ bash cleanroom/run.sh tas-s1-figure             # ... and its figures in R (xima
 MOUNT=$HOME/Git/aeo26-workshop:/aeo26:ro bash cleanroom/run.sh aeo26-compare
 bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STACIT
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
+MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
+  bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
+MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
+  bash cleanroom/run.sh cross-stack             # pixi outputs vs the apt runs
 ```
 
-`MOUNT=` adds one read-only bind mount (a project checkout, or `stacgrid/`).
+`MOUNT=` adds read-only bind mounts (a project checkout, `stacgrid/`, `evidence/`), space-separated.
 
 | Path | What |
 |---|---|
@@ -312,12 +341,12 @@ MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/
   to run in minutes. The code paths are the full ones.
 - The ports were written by someone who knows GDAL and checked against the originals. A
   newcomer would hit the traps above; the guidelines are there for that.
-- The project ports ran on apt's stack only. They weren't repeated on pixi, where GDAL is newer
-  and some warps differ (finding above).
+- The project ports ran on apt (24.04, some on 26.04) and pixi (24.04 host image), all on
+  one machine.
 
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
 - `stacgrid`: parallel reads, `raster:bands` scale/offset, POST-only APIs; try it on the
   fast-ice notebooks.
-- Run the project ports on pixi too, and on Nectar, Setonix and a laptop.
+- Run the project ports on Nectar, Setonix and a laptop.

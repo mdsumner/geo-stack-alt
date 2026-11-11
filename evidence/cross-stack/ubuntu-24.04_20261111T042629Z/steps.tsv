@@ -1,0 +1,9 @@
+step	seconds	exit
+apt	57.5	0
+tas	9.3	0
+aeo	0.6	0
+ga_odc	0.2	0
+ga_gdal	0.2	0
+ga_stacit	0.2	0
+ga_sg_py	0.2	0
+ga_sg_r	0.2	0

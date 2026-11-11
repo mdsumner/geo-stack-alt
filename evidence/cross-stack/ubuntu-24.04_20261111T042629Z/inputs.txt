@@ -1,0 +1,7 @@
+pixi /ev/pixi-projects/ubuntu-24.04_20261111T042057Z
+tas /ev/tas-s1-figure/ubuntu-24.04_20261110T230412Z
+aeo /ev/aeo26-compare/ubuntu-24.04_20261110T235849Z
+aeo_r /ev/aeo26-figure/ubuntu-24.04_20261111T031303Z
+ga /ev/ga-sar-ice-compare/ubuntu-24.04_20261111T003153Z
+ga_stacit /ev/ga-sar-ice-compare/ubuntu-26.04_20261111T003755Z
+stacgrid /ev/stacgrid/ubuntu-24.04_20261111T014224Z

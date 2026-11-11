@@ -1,0 +1,5 @@
+grid 4220 x 4939 at 100.0 m in EPSG:28355
+land mask: 32.4% of grid is land
+all: 7 bursts -> /out/tas/rio/out/tas_s1_change_all_100m.tif
+descending: 5 bursts -> /out/tas/rio/out/tas_s1_change_descending_100m.tif
+ascending: 2 bursts -> /out/tas/rio/out/tas_s1_change_ascending_100m.tif

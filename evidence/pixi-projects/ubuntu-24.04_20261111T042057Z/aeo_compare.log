@@ -1,0 +1,5 @@
+check_values: identical
+make_examples printed numbers: identical
+before_after.png: byte-identical
+fire_severity_and_gliders.png: byte-identical
+ndvi_change.png: byte-identical
