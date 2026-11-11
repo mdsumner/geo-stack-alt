@@ -1,0 +1,23 @@
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.5.4 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "<string>", line 1, in <module>
+  File "/usr/lib/python3/dist-packages/rasterio/__init__.py", line 55, in <module>
+    from rasterio.io import (
+  File "/usr/lib/python3/dist-packages/rasterio/io.py", line 9, in <module>
+    from rasterio._io import (
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3/dist-packages/rasterio/__init__.py", line 55, in <module>
+    from rasterio.io import (
+  File "/usr/lib/python3/dist-packages/rasterio/io.py", line 9, in <module>
+    from rasterio._io import (
+  File "rasterio/_io.pyx", line 1, in init rasterio._io
+ImportError: numpy.core.multiarray failed to import (auto-generated because you didn't call 'numpy.import_array()' after cimporting numpy; use '<void>numpy._import_array' to disable if you are certain you don't need it).
