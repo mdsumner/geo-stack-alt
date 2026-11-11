@@ -1,0 +1,14 @@
+step	seconds	exit
+apt	61.8	0
+venv	28.8	0
+r2u_setup	50.0	0
+r_install	15.3	0
+odc	6.7	0
+sg_py	10.9	0
+sg_r	13.0	0
+sg_py_stacit	18.2	0
+sg_r_stacit	18.9	0
+cmp_odc_py	0.2	0
+cmp_odc_r	0.2	0
+cmp_py_r	0.2	0
+cmp_stacit_py_r	0.2	0

@@ -1,0 +1,89 @@
+Hit https://cloud.r-project.org/bin/linux/ubuntu resolute-cran40/ InRelease     
+Hit http://r2u.stat.illinois.edu/ubuntu resolute InRelease                      
+Hit http://archive.ubuntu.com/ubuntu resolute InRelease                         
+Hit http://archive.ubuntu.com/ubuntu resolute-updates InRelease                 
+Hit http://security.ubuntu.com/ubuntu resolute-security InRelease               
+Hit http://archive.ubuntu.com/ubuntu resolute-backports InRelease               
+Fetched 0 B in 0s (0 B/s)                                                       
+Install system packages as root...
+Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 0%Reading package lists... 5%Reading package lists... 5%Reading package lists... 11%Reading package lists... 11%Reading package lists... 30%Reading package lists... 30%Reading package lists... 35%Reading package lists... 35%Reading package lists... 79%Reading package lists... 85%Reading package lists... 85%Reading package lists... 86%Reading package lists... 86%Reading package lists... 87%Reading package lists... 87%Reading package lists... 90%Reading package lists... 90%Reading package lists... 91%Reading package lists... 91%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 94%Reading package lists... 96%Reading package lists... 96%Reading package lists... 97%Reading package lists... 97%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... 99%Reading package lists... Done
+Building dependency tree... 0%Building dependency tree... 0%Building dependency tree... 50%Building dependency tree... 50%Building dependency tree... Done
+Reading state information... 0% Reading state information... 0% Reading state information... Done
+Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 0%      Reading package lists... 5%      Reading package lists... 5%      Reading package lists... 11%     Reading package lists... 11%     Reading package lists... 30%     Reading package lists... 30%     Reading package lists... 35%     Reading package lists... 35%     Reading package lists... 79%     Reading package lists... 85%     Reading package lists... 85%     Reading package lists... 86%     Reading package lists... 86%     Reading package lists... 87%     Reading package lists... 87%     Reading package lists... 90%     Reading package lists... 90%     Reading package lists... 91%     Reading package lists... 91%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 94%     Reading package lists... 96%     Reading package lists... 96%     Reading package lists... 97%     Reading package lists... 97%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... 99%     Reading package lists... Done    
+Building dependency tree... 0%   Building dependency tree... 0%   Building dependency tree... 50%  Building dependency tree... 50%  Building dependency tree... Done 
+Reading state information... 0%  Reading state information... 0%  Selecting previously unselected package r-cran-bit.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 16017 files and directories currently installed.)
+Preparing to unpack .../00-r-cran-bit_4.6.0-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-bit (4.6.0-1.ca2604.1) ...
+Selecting previously unselected package r-cran-bit64.
+Preparing to unpack .../01-r-cran-bit64_4.8.6-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-bit64 (4.8.6-1.ca2604.1) ...
+Selecting previously unselected package r-cran-cli.
+Preparing to unpack .../02-r-cran-cli_3.6.6-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-cli (3.6.6-1.ca2604.1) ...
+Selecting previously unselected package r-cran-nanoarrow.
+Preparing to unpack .../03-r-cran-nanoarrow_0.9.0-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-nanoarrow (0.9.0-1.ca2604.1) ...
+Selecting previously unselected package r-cran-rcpp.
+Preparing to unpack .../04-r-cran-rcpp_1.1.2-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-rcpp (1.1.2-1.ca2604.1) ...
+Selecting previously unselected package r-cran-wk.
+Preparing to unpack .../05-r-cran-wk_0.9.5-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-wk (0.9.5-1.ca2604.1) ...
+Selecting previously unselected package r-cran-rlang.
+Preparing to unpack .../06-r-cran-rlang_1.3.0-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-rlang (1.3.0-1.ca2604.1) ...
+Selecting previously unselected package r-cran-xml2.
+Preparing to unpack .../07-r-cran-xml2_1.6.0-1.ca2604.2_amd64.deb ...
+Unpacking r-cran-xml2 (1.6.0-1.ca2604.2) ...
+Selecting previously unselected package r-cran-yyjsonr.
+Preparing to unpack .../08-r-cran-yyjsonr_0.1.22-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-yyjsonr (0.1.22-1.ca2604.1) ...
+Selecting previously unselected package r-cran-rcppint64.
+Preparing to unpack .../09-r-cran-rcppint64_0.0.5-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-rcppint64 (0.0.5-1.ca2604.1) ...
+Selecting previously unselected package r-cran-gdalraster.
+Preparing to unpack .../10-r-cran-gdalraster_2.7.0-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-gdalraster (2.7.0-1.ca2604.1) ...
+Selecting previously unselected package r-cran-jsonlite.
+Preparing to unpack .../11-r-cran-jsonlite_2.0.0-1.ca2604.1_amd64.deb ...
+Unpacking r-cran-jsonlite (2.0.0-1.ca2604.1) ...
+Setting up r-cran-rcpp (1.1.2-1.ca2604.1) ...
+Setting up r-cran-rlang (1.3.0-1.ca2604.1) ...
+Setting up r-cran-nanoarrow (0.9.0-1.ca2604.1) ...
+Setting up r-cran-rcppint64 (0.0.5-1.ca2604.1) ...
+Setting up r-cran-bit (4.6.0-1.ca2604.1) ...
+Setting up r-cran-cli (3.6.6-1.ca2604.1) ...
+Setting up r-cran-bit64 (4.8.6-1.ca2604.1) ...
+Setting up r-cran-yyjsonr (0.1.22-1.ca2604.1) ...
+Setting up r-cran-jsonlite (2.0.0-1.ca2604.1) ...
+Setting up r-cran-wk (0.9.5-1.ca2604.1) ...
+Setting up r-cran-xml2 (1.6.0-1.ca2604.2) ...
+Setting up r-cran-gdalraster (2.7.0-1.ca2604.1) ...
+Reading state information... Done
+Get:1 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-bit amd64 4.6.0-1.ca2604.1 [595 kB]
+Get:2 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-bit64 amd64 4.8.6-1.ca2604.1 [551 kB]
+Get:3 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-cli amd64 3.6.6-1.ca2604.1 [1307 kB]
+Get:4 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-nanoarrow amd64 0.9.0-1.ca2604.1 [603 kB]
+Get:5 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-rcpp amd64 1.1.2-1.ca2604.1 [2079 kB]
+Get:6 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-wk amd64 0.9.5-1.ca2604.1 [1708 kB]
+Get:7 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-rlang amd64 1.3.0-1.ca2604.1 [1563 kB]
+Get:8 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-xml2 amd64 1.6.0-1.ca2604.2 [269 kB]
+Get:9 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-yyjsonr amd64 0.1.22-1.ca2604.1 [1126 kB]
+Get:10 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-rcppint64 amd64 0.0.5-1.ca2604.1 [48.6 kB]
+Get:11 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-gdalraster amd64 2.7.0-1.ca2604.1 [3941 kB]
+Get:12 http://r2u.stat.illinois.edu/ubuntu resolute/main amd64 r-cran-jsonlite amd64 2.0.0-1.ca2604.1 [630 kB]
+Fetched 14.4 MB in 0s (0 B/s)                                                   
+code for methods in class "Rcpp_CmbTable" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_CmbTable" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALAlg" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALAlg" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALRaster" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALRaster" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALVector" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_GDALVector" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_RunningStats" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_RunningStats" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_VSIFile" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+code for methods in class "Rcpp_VSIFile" was not checked for suspicious field assignments (recommended package 'codetools' not available?)
+gdalraster 2.7.0 GDAL 3.12.2 "Chicoutimi", released 2026/02/03 

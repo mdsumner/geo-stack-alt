@@ -1,0 +1,16 @@
+/cleanroom/experiments/ga-sar-ice/odc_load.py:22: PystacClientWarning: The requested method 'POST' is not advertised by any root catalog search link. Available methods: GET
+  items = stac_client.search(collections=["ga_s1_nrb_iw_hh_1"], datetime="2021-01-01/2021-03-01",
+/usr/lib/python3/dist-packages/rasterio/warp.py:344: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  _reproject(
+Found 45 items
+<xarray.Dataset> Size: 2MB
+Dimensions:                 (y: 145, x: 190, time: 15)
+Coordinates:
+  * y                       (y) float64 1kB 6.615e+05 6.613e+05 ... 6.327e+05
+  * x                       (x) float64 2kB 2.201e+06 2.201e+06 ... 2.239e+06
+  * time                    (time) datetime64[us] 120B 2021-01-01T22:27:35.86...
+    spatial_ref             int32 4B 3031
+Data variables:
+    hh_gamma0               (time, y, x) float32 2MB nan nan ... 0.178 0.1879
+    oa_layover_shadow_mask  (time, y, x) uint8 413kB 255 255 255 255 ... 0 0 0 0
+{"n_items": 45, "shape": [15, 145, 190], "gt": [2200800.0, 200.0, 0.0, 661600.0, 0.0, -200.0], "mask_nodata": "255", "search_s": 1.6, "load_s": 3.9}
