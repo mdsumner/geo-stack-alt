@@ -25,6 +25,8 @@ STAC = "https://explorer.dev.dea.ga.gov.au/stac/search"
 L, B, R, T = 73.5, -69.1, 74.0, -68.8
 RES, CRS = 200, "EPSG:3031"
 BANDS = ["hh_gamma0", "oa_layover_shadow_mask"]
+FUSE = os.environ.get("GDAL_LOAD_FUSE", "first")  # first valid wins (odc-stac), or "last" (a VRT mosaic)
+OVR = os.environ.get("GDAL_LOAD_OVR", "AUTO")  # AUTO (gdalwarp's default) or NONE: full-resolution reads
 
 
 def srs(d):
@@ -82,7 +84,7 @@ def main():
             acc = None
             for it in groups[d]:
                 wd = gdal.Warp("", href(it, b), format="MEM", dstSRS=CRS, outputBounds=(xl, yb, xr, yt),
-                               width=w, height=h, resampleAlg="near")
+                               width=w, height=h, resampleAlg="near", overviewLevel=OVR)
                 band = wd.GetRasterBand(1)
                 a, nd = band.ReadAsArray(), band.GetNoDataValue()
                 valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
@@ -90,7 +92,7 @@ def main():
                     acc, accv, fill = a.copy(), valid.copy(), (np.nan if nd is None else nd)
                     acc[~valid] = fill
                 else:
-                    take = valid & ~accv
+                    take = valid & ~accv if FUSE == "first" else valid
                     acc[take] = a[take]
                     accv |= take
             out[b].append(acc)

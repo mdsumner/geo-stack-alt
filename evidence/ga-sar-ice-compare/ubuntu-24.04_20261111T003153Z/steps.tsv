@@ -1,0 +1,9 @@
+step	seconds	exit
+apt	54.5	0
+venv	30.7	0
+versions	0.8	0
+odc	6.5	0
+gdal	12.3	0
+stacit	7.8	1
+compare	0.2	0
+compare_stacit	0.1	1
