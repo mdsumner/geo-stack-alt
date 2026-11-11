@@ -69,7 +69,8 @@ asset_href <- function(item, asset) {
 }
 
 warp_to_grid <- function(src, grid, resampling = "near", overviews = "AUTO") {
-  tf <- sprintf("/vsimem/stacgrid_%s.tif", paste(sample(letters, 12, TRUE), collapse = ""))
+  # pid + tempfile(): unique per forked worker, and leaves the R random stream alone
+  tf <- sprintf("/vsimem/stacgrid_%d_%s.tif", Sys.getpid(), basename(tempfile("")))
   on.exit(gdalraster::vsi_unlink(tf))
   gdalraster::warp(src, tf, t_srs = grid$crs, quiet = TRUE,
                    cl_arg = c("-te", grid$extent, "-ts", grid$width, grid$height,
@@ -81,15 +82,25 @@ warp_to_grid <- function(src, grid, resampling = "near", overviews = "AUTO") {
 }
 
 # Each asset as an array [x, y, group] (x fastest, rows top-down, as GDAL reads).
-stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AUTO", fuse = "first") {
-  n <- grid$width * grid$height
+# workers: warps run in that many forked processes (parallel::mclapply; serial on Windows).
+# Results are merged in item order whatever order they finish in, so pixels don't depend on it.
+stac_load <- function(groups, assets, grid, resampling = "near", overviews = "AUTO", fuse = "first",
+                      workers = 8L) {
+  jobs <- do.call(rbind, lapply(assets, function(asset) do.call(rbind, lapply(seq_along(groups), function(g)
+    data.frame(asset = asset, g = g, src = vapply(groups[[g]], asset_href, "", asset = asset))))))
+  warp <- function(src) warp_to_grid(src, grid, resampling, overviews)
+  res <- if (workers > 1L && .Platform$OS.type == "unix") {
+    parallel::mclapply(jobs$src, warp, mc.cores = workers, mc.preschedule = FALSE)
+  } else lapply(jobs$src, warp)
+  # mclapply returns a try-error for a failed warp, NULL for a worker that died
+  bad <- vapply(res, function(r) is.null(r) || inherits(r, "try-error"), NA)
+  if (any(bad)) stop("warp failed: ", jobs$src[bad][1], ": ", format(res[bad][[1]]))
   out <- list()
   for (asset in assets) {
     arr <- array(NA_real_, c(grid$width, grid$height, length(groups)))
     for (g in seq_along(groups)) {
       acc <- NULL
-      for (it in groups[[g]]) {
-        w <- warp_to_grid(asset_href(it, asset), grid, resampling, overviews)
+      for (w in res[jobs$asset == asset & jobs$g == g]) {
         a <- w$values
         valid <- if (is.na(w$nodata)) !is.na(a) else !is.na(a) & a != w$nodata
         if (is.null(acc)) {

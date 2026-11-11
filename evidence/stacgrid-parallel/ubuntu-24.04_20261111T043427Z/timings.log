@@ -1,0 +1,32 @@
+45 items, 15 groups, grid 190 x 145, 11.3 s, workers 1
+45 items, 15 groups, grid 190 x 145, 2.6 s, workers 16
+45 items, 15 groups, grid 190 x 145, 2.6 s, workers 16
+45 items, 15 groups, grid 190 x 145, 12.0 s, workers 1
+45 items, 15 groups, grid 190 x 145, 3.9 s, workers 4
+45 items, 15 groups, grid 190 x 145, 3.9 s, workers 4
+45 items, 15 groups, grid 190 x 145, 2.9 s, workers 8
+45 items, 15 groups, grid 190 x 145, 2.8 s, workers 8
+45 items, 15 groups, grid 190 x 145 , 12.6 s, workers 1 
+45 items, 15 groups, grid 190 x 145 , 4.4 s, workers 16 
+45 items, 15 groups, grid 190 x 145 , 4 s, workers 16 
+45 items, 15 groups, grid 190 x 145 , 12.9 s, workers 1 
+45 items, 15 groups, grid 190 x 145 , 8.3 s, workers 4 
+45 items, 15 groups, grid 190 x 145 , 8.1 s, workers 4 
+45 items, 15 groups, grid 190 x 145 , 5.3 s, workers 8 
+45 items, 15 groups, grid 190 x 145 , 5.8 s, workers 8 
+py_w1 45 items, 15 groups, grid 190 x 145, 11.3 s, workers 1
+py_w16 45 items, 15 groups, grid 190 x 145, 2.6 s, workers 16
+py_w16_again 45 items, 15 groups, grid 190 x 145, 2.6 s, workers 16
+py_w1_again 45 items, 15 groups, grid 190 x 145, 12.0 s, workers 1
+py_w4 45 items, 15 groups, grid 190 x 145, 3.9 s, workers 4
+py_w4_again 45 items, 15 groups, grid 190 x 145, 3.9 s, workers 4
+py_w8 45 items, 15 groups, grid 190 x 145, 2.9 s, workers 8
+py_w8_again 45 items, 15 groups, grid 190 x 145, 2.8 s, workers 8
+r_w1 45 items, 15 groups, grid 190 x 145 , 12.6 s, workers 1 
+r_w16 45 items, 15 groups, grid 190 x 145 , 4.4 s, workers 16 
+r_w16_again 45 items, 15 groups, grid 190 x 145 , 4 s, workers 16 
+r_w1_again 45 items, 15 groups, grid 190 x 145 , 12.9 s, workers 1 
+r_w4 45 items, 15 groups, grid 190 x 145 , 8.3 s, workers 4 
+r_w4_again 45 items, 15 groups, grid 190 x 145 , 8.1 s, workers 4 
+r_w8 45 items, 15 groups, grid 190 x 145 , 5.3 s, workers 8 
+r_w8_again 45 items, 15 groups, grid 190 x 145 , 5.8 s, workers 8 

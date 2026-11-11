@@ -28,6 +28,23 @@ EPSG:3031) on Ubuntu 24.04 (GDAL 3.8.4) and 26.04 (GDAL 3.12.2), one libgdal per
 - Python and R equal each other with `overviews="NONE", fuse="last"` too, the STACIT behaviour
   (`evidence/ga-sar-ice-compare/`: that setting matches GDAL's STACIT mosaic in every pixel).
 
+## Parallel reads
+
+`stac_load(..., workers = 8)`: the per-item warps run in threads (Python; GDAL releases the GIL)
+or forked processes (R, `parallel::mclapply`; serial on Windows). The merge still goes in item
+order, so pixels can't depend on which warp finishes first. `workers = 1` is the serial path.
+
+GA tutorial load, 45 items, Ubuntu 24.04, GDAL 3.8.4, wall time including the search, two passes
+(`cleanroom/arms/stacgrid-parallel.sh`, `evidence/stacgrid-parallel/`):
+
+| workers | 1 | 4 | 8 | 16 |
+|---|---|---|---|---|
+| Python | 11.3, 12.0 s | 3.9, 3.9 s | 2.9, 2.8 s | 2.6, 2.6 s |
+| R | 12.6, 12.9 s | 8.3, 8.1 s | 5.3, 5.8 s | 4.4, 4.0 s |
+
+`odc.stac.load()` on the same load: 6.4 s (whole script). Every run, both languages, every
+worker count: 0 pixels differ from odc-stac.
+
 Not handled: STAC POST-only APIs, `raster:bands` scale/offset, multi-band assets, items in several
-CRSs needing a per-item choice, parallel reads. Group labels are the group key (the solar date),
+CRSs needing a per-item choice. Group labels are the group key (the solar date),
 where odc-stac labels a group with its first item's time.

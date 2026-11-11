@@ -207,7 +207,10 @@ against 92) and slower (about 29 s against 12 s, odc 6 s).
 and R (`gdalraster`, `jsonlite`), with the same four functions: `stac_search`, `grid_from_bbox`,
 `group_items`, `stac_load`. Overviews and merge order are arguments. On Ubuntu 24.04 and 26.04
 its defaults equal `odc.stac.load()` in every pixel, from both languages, and Python equals R
-in STACIT mode too. About 110 lines each; serial, so about 11-13 s against odc's 6.5 s.
+in STACIT mode too. About 140 lines each. Reads run in parallel (threads in Python, forked
+processes in R): with 8 workers the load takes about 3 s in Python and 5-6 s in R, against
+odc's 6.4 s and 11-13 s serial, with the same pixels at every worker count
+(`evidence/stacgrid-parallel/`).
 
 ### Traps met on the way
 
@@ -314,6 +317,7 @@ bash cleanroom/run.sh tas-s1-figure             # ... and its figures in R (xima
 MOUNT=$HOME/Git/aeo26-workshop:/aeo26:ro bash cleanroom/run.sh aeo26-compare
 bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STACIT
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-16 workers
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -347,6 +351,5 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- `stacgrid`: parallel reads, `raster:bands` scale/offset, POST-only APIs; try it on the
-  fast-ice notebooks.
+- `stacgrid`: `raster:bands` scale/offset, POST-only APIs; try it on the fast-ice notebooks.
 - Run the project ports on Nectar, Setonix and a laptop.

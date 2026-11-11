@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """The GA tutorial load (see ../ga-sar-ice/odc_load.py) with stacgrid.py.
-  python3 ga_py.py <stacgrid dir> out.npz [overviews fuse]"""
+  python3 ga_py.py <stacgrid dir> out.npz [overviews fuse]   (STACGRID_WORKERS: threads, default 8)"""
 import os
 import sys
 import time
@@ -18,9 +18,10 @@ items = sg.stac_search("https://explorer.dev.dea.ga.gov.au/stac", ["ga_s1_nrb_iw
                        datetime="2021-01-01/2021-03-01")
 grid = sg.grid_from_bbox(BBOX, "EPSG:3031", 200)
 groups = sg.group_items(items, "solar_day")
-out = sg.stac_load(groups, ["hh_gamma0", "oa_layover_shadow_mask"], grid, overviews=ovr, fuse=fuse)
+out = sg.stac_load(groups, ["hh_gamma0", "oa_layover_shadow_mask"], grid, overviews=ovr, fuse=fuse,
+                   workers=int(os.environ.get("STACGRID_WORKERS", 8)))
 xl, yb, xr, yt = grid["extent"]
 np.savez_compressed(sys.argv[2], hh=out["hh_gamma0"], mask=out["oa_layover_shadow_mask"], time=np.array(list(groups)),
                     gt=np.array([xl, 200, 0.0, yt, 0.0, -200]), shape=np.array([grid["height"], grid["width"]]),
                     item_ids=np.array(sorted(i["id"] for i in items)))
-print(f"{len(items)} items, {len(groups)} groups, grid {grid['width']} x {grid['height']}, {time.time() - t0:.1f} s")
+print(f"{len(items)} items, {len(groups)} groups, grid {grid['width']} x {grid['height']}, {time.time() - t0:.1f} s, workers {os.environ.get('STACGRID_WORKERS', 8)}")

@@ -20,6 +20,7 @@ import math
 import urllib.parse
 import urllib.request
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 from osgeo import gdal, osr
@@ -109,26 +110,29 @@ def warp_to_grid(src: str, grid: dict, resampling="near", overviews="AUTO") -> t
 
 
 def stac_load(groups: dict[str, list[dict]], assets: list[str], grid: dict, resampling="near",
-              overviews="AUTO", fuse="first") -> dict[str, np.ndarray]:
+              overviews="AUTO", fuse="first", workers: int = 8) -> dict[str, np.ndarray]:
     """Each asset as a (group, y, x) array. Within a group the items are warped in time order and
     merged: fuse="first" keeps the first valid pixel (odc-stac), "last" the last (a VRT mosaic).
     overviews: "AUTO" lets the warp read a coarser overview when downsampling (gdalwarp and
-    odc-stac default), "NONE" always reads full resolution (as through a STACIT mosaic)."""
-    out = {}
+    odc-stac default), "NONE" always reads full resolution (as through a STACIT mosaic).
+    workers: warps run in that many threads (GDAL releases the GIL; the reads are network-bound).
+    Results are merged in item order whatever order they finish in, so pixels don't depend on it."""
+    jobs = [(asset, g, asset_href(it, asset)) for asset in assets
+            for g, members in enumerate(groups.values()) for it in members]
+    warp = lambda job: warp_to_grid(job[2], grid, resampling, overviews)  # noqa: E731
+    out, acc = {}, {}
+    with ThreadPoolExecutor(max(1, workers)) as ex:
+        for (asset, g, _), (a, nd) in zip(jobs, ex.map(warp, jobs) if workers > 1 else map(warp, jobs)):
+            valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
+            if (asset, g) not in acc:
+                a = a.copy()
+                a[~valid] = np.nan if nd is None else nd
+                acc[asset, g] = (a, valid.copy())
+            else:
+                m, mv = acc[asset, g]
+                take = valid & ~mv if fuse == "first" else valid
+                m[take] = a[take]
+                mv |= valid
     for asset in assets:
-        layers = []
-        for members in groups.values():
-            acc = accv = None
-            for it in members:
-                a, nd = warp_to_grid(asset_href(it, asset), grid, resampling, overviews)
-                valid = np.isfinite(a) if nd is None or math.isnan(nd) else a != nd
-                if acc is None:
-                    acc, accv = a.copy(), valid.copy()
-                    acc[~valid] = np.nan if nd is None else nd
-                else:
-                    take = valid & ~accv if fuse == "first" else valid
-                    acc[take] = a[take]
-                    accv |= valid
-            layers.append(acc)
-        out[asset] = np.stack(layers)
+        out[asset] = np.stack([acc[asset, g][0] for g in range(len(groups))])
     return out
