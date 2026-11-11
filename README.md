@@ -5,7 +5,7 @@ tests one candidate against that default, from a clean machine, and keeps the ev
 
 **Status (2026-11-11):** install paths compared on `ubuntu:24.04` and `26.04`; four real
 projects (Sentinel-1 and Sentinel-2) reproduced exactly on the alternative stack; one helper
-(`stacgrid/`, Python and R) for STAC time stacks. Not yet run on Nectar, Setonix or a laptop.
+(`stacgrid/`, Python and R) for STAC time stacks, which also reproduces GA's fast-ice notebook loads. Not yet run on Nectar, Setonix or a laptop.
 
 ## The stance (draft)
 
@@ -157,6 +157,7 @@ code, not from two GDAL builds.
 | aeo26-workshop | Sentinel-2 composites, fire severity, glider records | Main script was already `osgeo.gdal`. The two presenters' scripts, ported: answer table identical, all 3 example PNGs **byte-identical**. The project no longer needs rasterio | `evidence/aeo26-compare/` |
 | … its figures, in R | The 3 example figures (false colour, NDVI change, severity with gliders) with ximage, gdalraster, base graphics | Same printed numbers (reflectance ranges, glider counts, true-north angle); decimated severity pixels identical (0 of 1,000,000 differ); same figures, drawn by a different device | `evidence/aeo26-figure/` |
 | ga-sar-ice (GA tutorial) | `odc.stac.load` of 45 IW bursts, solar-day groups, 200 m EPSG:3031 | Plain `osgeo.gdal`: **every pixel equal**, but ~90 lines against ~15. With `stacgrid` (below): ~10 lines in Python or R, every pixel equal | `evidence/ga-sar-ice-compare/`, `evidence/stacgrid/` |
+| … GA's fast-ice notebooks | `sentinel_1_load_demo` and `fast_ice_from_stac_xarray`: EW from STAC-GeoParquet, IW from the API (`intersects=`), grouped by time, solar day and relative orbit, 40 m EPSG:3031, up to 150 items | With `stacgrid`, Python and R: same items, grids and groups, **0 of 217 M pixels differ**. On pixi only: Ubuntu's GDAL has no Parquet driver | `evidence/fast-ice/` |
 
 Line counts for the ports: tasmania 415 → 459, check_values 181 → 199, make_examples 267 → 277.
 The extra lines are the two helpers rasterio hides: an `osr` point/bounds transform with x/y
@@ -204,13 +205,20 @@ so each solar day is its own search: it was no shorter than plain `osgeo.gdal` (
 against 92) and slower (about 29 s against 12 s, odc 6 s).
 
 [`stacgrid/`](stacgrid/) is the missing layer, in Python (`osgeo.gdal`, numpy, standard library)
-and R (`gdalraster`, `jsonlite`), with the same four functions: `stac_search`, `grid_from_bbox`,
-`group_items`, `stac_load`. Overviews and merge order are arguments. On Ubuntu 24.04 and 26.04
+and R (`gdalraster`, `jsonlite`), with the same functions: `stac_search` (GET or POST),
+`items_from_geoparquet`, `grid_from_bbox`, `grid_from_raster`, `group_items`, `stac_load`.
+Overviews, merge order and the solar-day longitude are arguments. On Ubuntu 24.04 and 26.04
 its defaults equal `odc.stac.load()` in every pixel, from both languages, and Python equals R
-in STACIT mode too. About 140 lines each. Reads run in parallel (threads in Python, forked
+in STACIT mode too. About 270 lines each. Reads run in parallel (threads in Python, forked
 processes in R): with 8 workers the load takes about 3 s in Python and 5-6 s in R, against
 odc's 6.4 s and 11-13 s serial, with the same pixels at every worker count
 (`evidence/stacgrid-parallel/`).
+
+On GA's fast-ice notebooks it equals the notebooks' odc-stac loads in every pixel too
+(details in [`stacgrid/README.md`](stacgrid/README.md)). Getting there exposed odc-stac's
+solar-day rule: one longitude for the whole load (the grid centre) and whole hours, which
+splits differently from a per-item longitude when passes fall near local midnight (150 items at
+167°E: 30 groups against 60).
 
 ### Traps met on the way
 
@@ -225,6 +233,16 @@ odc's 6.4 s and 11-13 s serial, with the same pixels at every worker count
 - **odc-stac's S3 setup** (`configure_s3_access`) needs `odc-stac[botocore]`.
 - **R's PNG device needs a UTF-8 locale.** In a bare container (C locale), `·`, `–` and `→` in
   titles come out as `..`. Set `LANG=C.UTF-8`.
+- **pandas 3 and stac-geoparquet 0.8.** `stac_geoparquet.to_item_collection` stringifies only
+  `datetime64[ns]` columns; pandas 3 reads DEA's EW index as `datetime64[us, UTC]`, and pystac
+  fails on the raw Timestamps (`TypeError: object of type 'Timestamp' has no len()`). fast-ice's
+  own lock pairs pandas 3.0.3 with stac-geoparquet 0.8.0 (not run). The reference script casts
+  to ns first. stacgrid reads the file with OGR and doesn't meet this.
+- **GDAL's Parquet driver pre-filters on a `bbox` column** and drops null and antimeridian
+  (xmin > xmax) bboxes: 6 of 60 EW items. `OGR_PARQUET_USE_BBOX=NO` turns it off.
+- **DEA's STAC API takes POST without advertising it**, and `intersects` only by POST.
+- **fast-ice's GeoParquet URL** (`data.dev.dea.ga.gov.au`) returned 504; the S3 copy has the
+  sha256 in fast-ice's registry.
 - **S3 listing from containers** timed out once (about 9,800 prefixes from 16 threads). Shared
   code, not a stack difference; the tasmania runs reuse a saved burst index.
 
@@ -318,6 +336,7 @@ MOUNT=$HOME/Git/aeo26-workshop:/aeo26:ro bash cleanroom/run.sh aeo26-compare
 bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STACIT
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-16 workers
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice notebook loads (pixi)
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -331,7 +350,7 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 | `cleanroom/run.sh` | Runs one arm in a fresh container, keeps logs and timings |
 | `cleanroom/arms/*.sh` | One script per install path or experiment |
 | `cleanroom/probe/` | The shared probe: `probe_gdal.py`, `probe_rasterio.py`, `probe.R`, `common.py` |
-| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original |
+| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original; `fast-ice/` has the notebooks' load cells as scripts |
 | `stacgrid/` | STAC items → groups → grid, Python and R |
 | `evidence/` | Outputs of each run (`.tif` files are not kept in git: re-run to get them) |
 | `findings/` | Write-ups |
@@ -351,5 +370,5 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- `stacgrid`: `raster:bands` scale/offset, POST-only APIs; try it on the fast-ice notebooks.
+- `stacgrid`: `raster:bands` scale/offset; the fast-ice processing beyond the loads (NormCovar).
 - Run the project ports on Nectar, Setonix and a laptop.

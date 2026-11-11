@@ -17,7 +17,7 @@ t0 = time.time()
 items = sg.stac_search("https://explorer.dev.dea.ga.gov.au/stac", ["ga_s1_nrb_iw_hh_1"], bbox=BBOX,
                        datetime="2021-01-01/2021-03-01")
 grid = sg.grid_from_bbox(BBOX, "EPSG:3031", 200)
-groups = sg.group_items(items, "solar_day")
+groups = sg.group_items(items, "solar_day", grid=grid)
 out = sg.stac_load(groups, ["hh_gamma0", "oa_layover_shadow_mask"], grid, overviews=ovr, fuse=fuse,
                    workers=int(os.environ.get("STACGRID_WORKERS", 8)))
 xl, yb, xr, yt = grid["extent"]

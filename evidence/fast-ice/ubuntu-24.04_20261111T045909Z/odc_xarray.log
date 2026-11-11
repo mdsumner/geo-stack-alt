@@ -1,0 +1,5 @@
+/cleanroom/experiments/fast-ice/odc_xarray.py:69: PystacClientWarning: The requested method 'POST' is not advertised by any root catalog search link. Available methods: GET
+  iw_search = stac_client.search(collections=[IW_COLLECTION], datetime=f"{START_TIME}/{END_TIME}",
+/work/geo/.pixi/envs/default/lib/python3.13/site-packages/rasterio/warp.py:390: NotGeoreferencedWarning: Dataset has no geotransform, gcps, or rpcs. The identity matrix will be returned.
+  dest = _reproject(
+{"ew_items": 60, "ew_shape": [60, 1407, 1683], "ew_s": 25.7, "iw_items": 150, "iw_shape": [30, 1407, 1683], "iw_s": 8.7, "ew_dtype": "float32", "ew_nodata": "nan", "iw_dtype": "float32", "iw_nodata": "nan"}

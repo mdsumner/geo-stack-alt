@@ -1,0 +1,9 @@
+✔ Added python=3.13
+✔ Added numpy >=2.5.4,<3
+✔ Added gdal >=3.13.3,<4
+✔ Added libgdal >=3.13.3,<4
+✔ Added libgdal-arrow-parquet >=3.13.3,<4
+✔ Added r-base >=4.5.3,<4.6
+✔ Added r-gdalraster >=2.7.0,<3
+✔ Added r-jsonlite >=2.0.0,<3
+✔ Added r-curl >=8.0.0,<9

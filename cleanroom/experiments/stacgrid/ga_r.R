@@ -10,7 +10,7 @@ t0 <- Sys.time()
 items <- stac_search("https://explorer.dev.dea.ga.gov.au/stac", "ga_s1_nrb_iw_hh_1", bbox = bbox,
                      datetime = "2021-01-01/2021-03-01")
 grid <- grid_from_bbox(bbox, "EPSG:3031", 200)
-groups <- group_items(items, "solar_day")
+groups <- group_items(items, "solar_day", grid = grid)
 out <- stac_load(groups, c("hh_gamma0", "oa_layover_shadow_mask"), grid, overviews = ovr, fuse = fuse,
                  workers = as.integer(Sys.getenv("STACGRID_WORKERS", "8")))
 for (k in names(out)) write_stack(out[[k]], grid, file.path(outdir, paste0(k, ".tif")), names(groups))
