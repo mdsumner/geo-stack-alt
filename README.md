@@ -3,19 +3,30 @@
 Is there a better default geospatial stack than "a venv and `pip install rasterio`"? This repo
 tests one candidate against that default, from a clean machine, and keeps the evidence.
 
-**Status (2026-11-10):** early. Two install paths compared on `ubuntu:24.04`; one finding about
-GDAL itself. Not yet run on Nectar, Setonix or a laptop.
+**Status (2026-11-11):** install paths compared on `ubuntu:24.04` and `26.04`; four real
+projects (Sentinel-1 and Sentinel-2) reproduced exactly on the alternative stack; one helper
+(`stacgrid/`, Python and R) for STAC time stacks. Not yet run on Nectar, Setonix or a laptop.
 
 ## The stance (draft)
 
 > Use **GDAL itself** as the processing core, from Python (`osgeo.gdal`) and R (`gdalraster`,
 > `vapour`, `wk`, with `ximage` for figures), with **one libgdal** shared by both, installed
-> by **pixi** from conda-forge and pinned by `pixi.lock`.
+> from **binaries**: by **pixi** from conda-forge and pinned by `pixi.lock`, or, on Ubuntu, all
+> from **apt** (`python3-gdal` plus R via r2u).
+
+Tested on real work, not just a probe: four recent projects, all of which rest on the usual
+rasterio-level operations (read, reproject onto a grid, rasterize, write COGs, plot). In every
+one the alternative gave the **same pixels and the same numbers** as the original, on Ubuntu
+24.04's GDAL 3.8.4 (February 2024), and for the STAC load on 3.12.2 too
+([below](#real-workloads-four-projects)).
+It is equivalent, not magic: a little more boilerplate in places, and two traps to know about.
+What it buys is fewer dependencies, one GDAL across both languages, and installs with nothing
+to compile and no pip/apt conflicts.
 
 The usual default is the wheel stack: rasterio, geopandas/pyogrio and shapely, each with a
 private copy of GDAL/PROJ/GEOS inside its wheel, and, for R, sf or terra built separately. That
 default is easy to install. The claim here is that the alternative is just as easy now, and
-gives you GDAL's own API, a newer GDAL, more drivers, one version of every library across
+gives you GDAL's own API, more drivers (and, with pixi, a newer GDAL), one version of every library across
 languages, and a lockfile.
 
 This is for anyone starting out, not for experts who can build GDAL themselves. The test is
@@ -93,12 +104,29 @@ What this says:
   case) and the **age** of Ubuntu's GDAL (3.8.4, released February 2024).
 - **r2u is the strongest R default on Ubuntu:** one script, then binaries for everything,
   with system libraries pulled in by apt. It's limited to Ubuntu LTS and to the distro's
-  GDAL. It also suggests an all-apt arm: r2u plus `python3-gdal` would share one (old) libgdal
-  across both languages. Untested.
+  GDAL. Add `python3-gdal` and you get the all-apt arm below.
 - `terra::project` gives a different answer from `gdal.Warp`, gdalraster and vapour **on the
   same GDAL** (mean 558.9181 against 558.9196; min and max agree). Not yet explained.
 - The source path's documented system-requirements list is out of date for sf, because of s2
   and Abseil. A newcomer following it ends up with no sf.
+
+### All binaries from apt: `python3-gdal` plus r2u
+
+Arm `apt-all`: apt's `python3-gdal`, numpy and matplotlib, then R and CRAN packages as `.deb`s
+through r2u. Python and R load the distro's one libgdal. Nothing compiles, there's no venv.
+
+| | Ubuntu 24.04 | Ubuntu 26.04 | (B pixi, 26.04, for scale) |
+|---|---|---|---|
+| GDAL / Python / R | 3.8.4 / 3.12 / 4.6.2 | 3.12.2 / 3.14.4 / 4.6.2 | 3.13.3 / 3.15.2 / 4.5.3 |
+| R packages that load | 7 of 7 (via r2u, above) | 7 of 7 | 7 of 7 |
+| Time / disk | apt-all not run; apt + r2u + 3 R packages took about 2.2 min (tas-s1-figure) | about 3.3 min, 591 MB in total | 1.8 GB env + 309 MB cache |
+| Drivers missing (of 21) | not probed | Parquet, KEA | Parquet |
+| DEM warp mean | 558.9196 | 558.9196 | 558.9198 |
+
+The warp mean follows the GDAL version, not the installer: 3.8.4 and 3.12.2 agree, and 3.13
+differs (finding below). Old distro GDAL turned out to be fine for the real workloads below;
+the one place it fell short is GDAL's STACIT driver, which on 3.8.4 can't read current STAC
+items (`proj:code`).
 
 ### The two means differ, and that is the point
 
@@ -113,6 +141,61 @@ What this shows about the stacks:
 - In arm A, which GDAL you have depends on which wheel did the work. When rasterio's wheel moves
   to 3.13, this warp changes on `pip install -U`, without warning.
 - `pixi.lock` records the exact libgdal build, and every language in the env uses it.
+
+## Real workloads: four projects
+
+Each project's own rasterio code was ported to `osgeo.gdal` (and its figures redone in R where
+noted), then both versions were run in the same clean container against **one** libgdal (apt's
+`python3-rasterio` and `python3-gdal` link the same file), so any difference comes from the
+code, not from two GDAL builds.
+
+| Project | What it does | Result | Evidence |
+|---|---|---|---|
+| tasmania-s1-change | Sentinel-1 NRB bursts from S3, boxcar, dB change, per-burst windowed `reproject` (average) into a state mosaic, land mask (rasterize), COG | **Bit-identical**: 7 bursts and 3 mosaics, max diff 0, same masks, same stats. No rasterio or shapely in the port | `evidence/tas-s1-compare/` |
+| … its figures, in R | 2×2 change maps and histogram with ximage, gdalraster, base graphics | Same decimated pixels as Python's averaged read; stats equal to float32 rounding; same figure | `evidence/tas-s1-figure/` |
+| mi-island-s1-mirounga | Plans to reuse the tasmania per-scene step | Covered by the above | |
+| aeo26-workshop | Sentinel-2 composites, fire severity, glider records | Main script was already `osgeo.gdal`. The two presenters' scripts, ported: answer table identical, all 3 example PNGs **byte-identical**. The project no longer needs rasterio | `evidence/aeo26-compare/` |
+| ga-sar-ice (GA tutorial) | `odc.stac.load` of 45 IW bursts, solar-day groups, 200 m EPSG:3031 | Plain `osgeo.gdal`: **every pixel equal**, but ~90 lines against ~15. With `stacgrid` (below): ~10 lines in Python or R, every pixel equal | `evidence/ga-sar-ice-compare/`, `evidence/stacgrid/` |
+
+Line counts for the ports: tasmania 415 → 459, check_values 181 → 199, make_examples 267 → 277.
+The extra lines are the two helpers rasterio hides: an `osr` point/bounds transform with x/y
+axis order, and an OGR rasterize.
+
+### STAC time stacks: odc-stac, STACIT and `stacgrid`
+
+odc-stac does more than read: it searches, snaps a grid, groups by solar day and merges
+overlaps. To find out exactly what, the same load was done three ways, and every difference was
+traced to two choices:
+
+| Loader | Overviews when downsampling | Overlaps | Equal to |
+|---|---|---|---|
+| `odc.stac.load()` (0.5.3) | read (`-ovr AUTO`) | first valid pixel wins | per-item `gdal.Warp`, defaults, first-wins: 0 pixels differ (GDAL 3.8.4 and 3.12.2) |
+| GDAL STACIT mosaic, warped | not available through the VRT | last valid wins | per-item `gdal.Warp`, `overviewLevel="NONE"`, last-wins: 0 of 226,943 differ |
+
+Nearest-neighbour from 20 m to 200 m: the overview choice changes nearly every value (by up to
+10 dB); the merge order only the burst overlaps (about 9% of pixels). STACIT has no time axis,
+so each solar day is its own search: it was no shorter than plain `osgeo.gdal` (78 lines
+against 92) and slower (about 29 s against 12 s, odc 6 s).
+
+[`stacgrid/`](stacgrid/) is the missing layer, in Python (`osgeo.gdal`, numpy, standard library)
+and R (`gdalraster`, `jsonlite`), with the same four functions: `stac_search`, `grid_from_bbox`,
+`group_items`, `stac_load`. Overviews and merge order are arguments. On Ubuntu 24.04 and 26.04
+its defaults equal `odc.stac.load()` in every pixel, from both languages, and Python equals R
+in STACIT mode too. About 110 lines each; serial, so about 11-13 s against odc's 6.5 s.
+
+### Traps met on the way
+
+- **`osgeo.gdal` dataset lifetime.** `gdal.Open(p).GetRasterBand(1).ReadAsArray()` in one line
+  fails on GDAL 3.8 (`TypeError ... GDALRasterBandShadow`): the dataset is freed before the band
+  is read. Keep the dataset in a variable. (`evidence/aeo26-compare/failed/`)
+- **Axis order.** `osr` follows the CRS's axis order (lat/lon for EPSG:4326) unless you set
+  `OAMS_TRADITIONAL_GIS_ORDER`, which rasterio does for you.
+- **apt plus pip.** A venv over apt's rasterio (`--system-site-packages`) breaks as soon as pip
+  installs numpy 2 into it: apt's rasterio was built for numpy 1.26 and won't import. Pin numpy
+  to apt's version. (`evidence/ga-sar-ice-compare/failed/`)
+- **odc-stac's S3 setup** (`configure_s3_access`) needs `odc-stac[botocore]`.
+- **S3 listing from containers** timed out once (about 9,800 prefixes from 16 threads). Shared
+  code, not a stack difference; the tasmania runs reuse a saved burst index.
 
 ## Guidelines so far
 
@@ -147,6 +230,18 @@ What this shows about the stacks:
    (`libgdal libgdal-arrow-parquet`); use the trimmed set when files or space are tight.
    Parquet works for real: GDAL's Parquet driver reads the ga-sar-ice EW STAC-GeoParquet index
    over HTTPS in under a second (190 scenes, 149 fields).
+7. **On Ubuntu, apt alone is a complete stack**: `python3-gdal` plus R through r2u, no venv, no
+   compiler, one libgdal. Its GDAL is the distro's (3.8.4 on 24.04, 3.12.2 on 26.04), which was
+   enough for all four projects. Don't mix in pip over apt's binary packages unless you pin
+   numpy to apt's version.
+8. **Porting rasterio code to `osgeo.gdal`**: call `gdal.UseExceptions()`; set
+   `OAMS_TRADITIONAL_GIS_ORDER` on every `osr.SpatialReference`; keep each dataset in a variable
+   while you read it; `gdal.Warp(..., format="MEM", outputBounds=, width=, height=)` is
+   `reproject` into a window, `osr.CoordinateTransformation.TransformBounds` is
+   `transform_bounds`, `gdal.Translate(format="COG")` is a COG copy.
+9. **Say which overview and merge rule a load used.** Nearest-neighbour downsampling from an
+   overview and from full resolution give different values; odc-stac and STACIT differ on both.
+   `stacgrid` makes both arguments.
 
 A starting `pixi.toml` that matches arm B:
 
@@ -185,28 +280,42 @@ VARIANT=like PIXI_PKGS="python numpy gdal libgdal matplotlib-base rasterio geopa
   bash cleanroom/run.sh pixi-py
 bash cleanroom/run.sh r-r2u                     # R via r2u (also r-p3m, r-source)
 bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
+IMAGE=ubuntu:26.04 bash cleanroom/run.sh apt-all  # python3-gdal + r2u, one apt libgdal
+bash cleanroom/run.sh tas-s1-compare            # tasmania-s1-change: rasterio vs osgeo.gdal port
+bash cleanroom/run.sh tas-s1-figure             # ... and its figures in R (ximage, gdalraster)
+MOUNT=$HOME/Git/aeo26-workshop:/aeo26:ro bash cleanroom/run.sh aeo26-compare
+bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STACIT
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
 ```
+
+`MOUNT=` adds one read-only bind mount (a project checkout, or `stacgrid/`).
 
 | Path | What |
 |---|---|
 | `cleanroom/run.sh` | Runs one arm in a fresh container, keeps logs and timings |
 | `cleanroom/arms/*.sh` | One script per install path or experiment |
 | `cleanroom/probe/` | The shared probe: `probe_gdal.py`, `probe_rasterio.py`, `probe.R`, `common.py` |
-| `cleanroom/experiments/` | Scripts behind the warp finding |
+| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original |
+| `stacgrid/` | STAC items → groups → grid, Python and R |
 | `evidence/` | Outputs of each run (`.tif` files are not kept in git: re-run to get them) |
 | `findings/` | Write-ups |
 
 ## Caveats
 
 - Timings come from one host with a very fast network. Treat them as a lower bound.
-- One base image so far (ubuntu:24.04, x86_64). No macOS or Windows yet, and no HPC
-  (Setonix has no Docker, and its conda/pixi file-count limits are unchecked).
-- The probe is one small job. A real workload (the aeo26 Sentinel-2 composite, which already
-  has an R twin on gdalraster + ximage) is the next test.
+- Ubuntu only (24.04 and 26.04, x86_64). No macOS or Windows yet, and no HPC (Setonix has no
+  Docker, and its conda/pixi file-count limits are unchecked).
+- The project runs use subsets (7 of 249 bursts at 80 m inputs; one GA tutorial area), chosen
+  to run in minutes. The code paths are the full ones.
+- The ports were written by someone who knows GDAL and checked against the originals. A
+  newcomer would hit the traps above; the guidelines are there for that.
+- The project ports ran on apt's stack only. They weren't repeated on pixi, where GDAL is newer
+  and some warps differ (finding above).
 
 ## Next
 
 - Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
-- An all-apt arm: r2u plus `python3-gdal`.
-- Port a real workload from rasterio to osgeo.gdal and compare it with the R version.
-- Run the same arms on Nectar, Setonix and a laptop.
+- aeo26's three example figures in R (ximage), as was done for tasmania.
+- `stacgrid`: parallel reads, `raster:bands` scale/offset, POST-only APIs; try it on the
+  fast-ice notebooks.
+- Run the project ports on pixi too, and on Nectar, Setonix and a laptop.
