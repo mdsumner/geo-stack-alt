@@ -415,8 +415,9 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 ## Caveats
 
 - Timings come from one host with a very fast network. Treat them as a lower bound.
-- Ubuntu only (24.04 and 26.04, x86_64). No macOS or Windows yet, and no HPC (Setonix has no
-  Docker, and its conda/pixi file-count limits are unchecked).
+- Ubuntu only (24.04 and 26.04, x86_64). No macOS or Windows yet, and no HPC. Setonix runs
+  Docker images through Singularity, which works but is a do-it-yourself workflow; `run.sh`
+  doesn't drive it yet, and conda/pixi file-count limits there are unchecked.
 - The project runs use subsets (7 of 249 bursts at 80 m inputs; one GA tutorial area), chosen
   to run in minutes. The code paths are the full ones.
 - The ports were written by someone who knows GDAL and checked against the originals. A

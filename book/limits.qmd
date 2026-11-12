@@ -3,8 +3,9 @@
 ## Limits
 
 - **One host.** Ubuntu 24.04 and 26.04, x86_64, a very fast network. Treat timings as a lower
-  bound. Not yet macOS, Windows, Nectar or Setonix (Setonix has no Docker, and its file-count
-  limits for conda/pixi envs are unchecked).
+  bound. Not yet macOS, Windows, Nectar or Setonix. Setonix can run the same container images
+  through Singularity, but that's a do-it-yourself workflow the run script doesn't drive yet,
+  and its file-count limits for conda/pixi envs are unchecked.
 - **Subsets.** Each project ran on a subset chosen to run in minutes (for example 7 of 249
   bursts at 80 m inputs; one GA tutorial area). The code paths are the full ones.
 - **SAM and SVM** in fast-ice were not run (they need torch). The port stops at the SAM input.
