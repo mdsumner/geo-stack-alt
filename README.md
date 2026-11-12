@@ -131,6 +131,26 @@ differs (finding below). Old distro GDAL turned out to be fine for the real work
 the one place it fell short is GDAL's STACIT driver, which on 3.8.4 can't read current STAC
 items (`proj:code`).
 
+### Prebuilt images: gdal-r-ci and gdal-conda
+
+The same probe, one-library census, stacgrid-vs-odc load and NormCovar ports in
+`ghcr.io/hypertidy/gdal-r-python:latest` (GDAL/PROJ/GEOS from source, R and Python linked to
+them) and `ghcr.io/hypertidy/gdal-conda:latest` (one conda-forge pixi env), both GDAL 3.13.3
+(arm `gdal-r-ci.sh`; `evidence/gdal-r-ci/`, `evidence/gdal-conda/`):
+
+- One libgdal, libproj and libgeos file in a process holding osgeo.gdal, rasterio, pyogrio,
+  fiona, shapely, pyproj, and in R sf, terra, gdalraster, vapour plus those through reticulate.
+- DEM warp 558.9198 from osgeo.gdal, rasterio, gdalraster, vapour (as arm B); `terra::project`
+  558.9184. stacgrid equals odc-stac, 0 pixels; the NormCovar ports agree as on pixi.
+- The fast-ice notebook, its packages added on top: the NaN crash (odc-stac 0.5.3) and the black
+  SAM input (0.5.2), as in its "resolved today" stacks. One GDAL doesn't cover the Python layer.
+- `gdal-r-python` sets `DASK_ARRAY__QUERY_PLANNING=True` (git dask): odc-stac can't load until
+  it's `False`. terra sets `GDAL_DATA` to `""` on load, and in gdal-conda `import pyogrio` via
+  reticulate then fails. normalized_covariance says `requires-python <3.14`: pip refuses, uv
+  doesn't check.
+
+Book chapter: "Prebuilt containers".
+
 ### The two means differ, and that is the point
 
 The 0.0002 gap is not a binding difference. GDAL 3.13 changed bilinear/cubic warping for
@@ -394,6 +414,8 @@ MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice 
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh scale      # raster:bands scale/offset (pixi)
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh multiband  # multi-band assets (pixi)
 MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh normcovar  # fast-ice NormCovar, 3 notebook stacks vs ports
+IMAGE=ghcr.io/hypertidy/gdal-r-python:latest MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh gdal-r-ci
+IMAGE=ghcr.io/hypertidy/gdal-conda:latest MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh gdal-conda
 MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
   bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
 MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
@@ -427,6 +449,6 @@ MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
 
 ## Next
 
-- Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
+- Explain the `terra::project` difference (same GDAL, different mean: 3.8.4 and 3.13.3).
 - fast-ice SAM/SVM on the port's SAM input (needs torch; out of this repo's scope so far).
 - Run the project ports on Nectar, Setonix and a laptop.

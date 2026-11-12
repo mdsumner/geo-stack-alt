@@ -12,6 +12,8 @@ versions to show up, which is why no single package's tests caught it.
 | STACIT on old GDAL | DEA items carry `proj:code` only; GDAL 3.8.4 apparently needs `proj:epsg` (inferred, not bisected) | Ubuntu 24.04's GDAL can't mosaic DEA S1 ("No compatible asset found"); 3.12.2 can | `ga-sar-ice-compare/` |
 | Warp kernel | GDAL 3.13 stopped widening bilinear/cubic for downsampling < 2x | Same command, different DEM values on upgrade (up to 10.9 m) | [chapter @sec-one-gdal] |
 | Rasterize nodata | `gdal_rasterize` and `gdal vector rasterize` set NoData = 0 on outputs they create (3.10+) | A 0/1 mask's 0s become nodata | `normcovar/` |
+| odc-stac under dask query planning | gdal-r-python's git dask with `DASK_ARRAY__QUERY_PLANNING=True` + odc-loader 0.6.5 | odc-stac can't load (`TypeError`) | `gdal-r-ci/` |
+| terra and pyogrio in one R process | terra sets `GDAL_DATA` to `""` on load; pyogrio checks it on import (conda GDAL) | `reticulate::import("pyogrio")` fails after `library(terra)` | `gdal-conda/` |
 | Two GDALs in one process | rasterio and pyogrio wheels each bundle their own | 3.12.2 and 3.12.4 in one Python session | `pip/` |
 
 The pip/wheel default makes this worse in one specific way: which GDAL you get depends on which

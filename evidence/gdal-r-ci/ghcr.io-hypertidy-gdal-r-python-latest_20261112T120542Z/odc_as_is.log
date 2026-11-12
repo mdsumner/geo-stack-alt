@@ -1,0 +1,46 @@
+/cleanroom/experiments/ga-sar-ice/odc_load.py:22: PystacClientWarning: The requested method 'POST' is not advertised by any root catalog search link. Available methods: GET
+  items = stac_client.search(collections=["ga_s1_nrb_iw_hh_1"], datetime="2021-01-01/2021-03-01",
+Found 45 items
+Traceback (most recent call last):
+  File "/cleanroom/experiments/ga-sar-ice/odc_load.py", line 26, in <module>
+    ds = load(items=items, bands=["hh_gamma0", "oa_layover_shadow_mask"], intersects=aoi_bbox.boundary(),
+              crs="3031", resolution=200, groupby="solar_day", chunks={})
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/stac/_stac_load.py", line 509, in load
+    chunked_load(
+    ~~~~~~~~~~~~^
+        load_cfg,
+        ^^^^^^^^^
+    ...<10 lines>...
+        dtype=dtype,
+        ^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 694, in chunked_load
+    return dask_chunked_load(
+        load_cfg,
+    ...<8 lines>...
+        dtype=dtype,
+    )
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 751, in dask_chunked_load
+    ds = dask_loader.build(gbox, tss, raster_cfg)
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 253, in build
+    return mk_dataset(
+        gbox,
+    ...<3 lines>...
+        template=self.template,
+    )
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 657, in mk_dataset
+    {name: _maker(name, band) for name, band in bands.items()},
+           ~~~~~~^^^^^^^^^^^^
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 641, in _maker
+    data = _alloc(
+        shape,
+    ...<2 lines>...
+        ydim=ydim + 1,  # +1 for time dimension
+    )
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 604, in _alloc
+    return alloc(shape, dtype, name=name, ydim=ydim)
+  File "/opt/gdal-py/lib/python3.14/site-packages/odc/loader/_builder.py", line 436, in __call__
+    return da.Array(dsk, band_layer, chunks, dtype=dtype, shape=shape)
+           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Array.__init__() got an unexpected keyword argument 'dtype'

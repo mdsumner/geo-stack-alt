@@ -1,0 +1,12 @@
+{
+ "libs": [
+  "/opt/gdal-conda/.pixi/envs/release/lib/libgdal.so.39.3.13.3",
+  "/opt/gdal-conda/.pixi/envs/release/lib/libgeos.so.3.14.1",
+  "/opt/gdal-conda/.pixi/envs/release/lib/libgeos_c.so.1.20.5",
+  "/opt/gdal-conda/.pixi/envs/release/lib/libproj.so.25.9.9.0"
+ ],
+ "proj": "9.9.0",
+ "shapely_geos": "3.14.1",
+ "rasterio_gdal": "3.13.3",
+ "pyogrio_gdal": "3.13.3"
+}

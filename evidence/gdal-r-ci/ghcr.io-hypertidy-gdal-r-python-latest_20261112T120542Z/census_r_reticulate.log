@@ -1,0 +1,15 @@
+{
+  "libs": ["/usr/local/lib/libgdal.so.39.3.13.3", "/usr/local/lib/libgeos_c.so.1.21.0", "/usr/local/lib/libgeos.so.3.15.0", "/usr/local/lib/libproj.so.25.9.9.0"],
+  "sf": {
+    "GEOS": "3.15.0",
+    "GDAL": "3.13.3",
+    "proj.4": "9.9.0",
+    "GDAL_with_GEOS": "true",
+    "USE_PROJ_H": "true",
+    "PROJ": "9.9.0"
+  },
+  "terra": "3.13.3",
+  "gdalraster": "GDAL 3.13.3 \"Iowa City\", released 2026/08/13",
+  "py_gdal": "3.13.3",
+  "rasterio_gdal": "3.13.3"
+}

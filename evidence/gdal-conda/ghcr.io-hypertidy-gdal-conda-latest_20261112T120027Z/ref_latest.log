@@ -1,0 +1,69 @@
+2026-11-12 12:03:08.111 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:828 - Starting full normcovar processing chain (xarray) for windows=[11, 21, 33]...
+2026-11-12 12:03:08.111 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:833 - Window 11: computing DoB, local std, normcovar...
+2026-11-12 12:03:08.111 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=11...
+2026-11-12 12:03:08.116 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.145 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=11...
+2026-11-12 12:03:08.161 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=11...
+2026-11-12 12:03:08.162 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.205 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=11...
+2026-11-12 12:03:08.241 | INFO     | normalized_covariance.normcovar:compute_normcovar_xr:751 - Starting normcovar computation (xarray) for w=11
+2026-11-12 12:03:08.245 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:104 - Computing local_mean_var.
+2026-11-12 12:03:08.251 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:108 - Filling nans.
+2026-11-12 12:03:08.251 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:115 - Computing smoothed variance.
+2026-11-12 12:03:08.265 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:123 - Computing image covariance.
+2026-11-12 12:03:08.267 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:127 - Average product_of_local_devs.
+2026-11-12 12:03:08.286 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:833 - Window 21: computing DoB, local std, normcovar...
+2026-11-12 12:03:08.286 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=21...
+2026-11-12 12:03:08.289 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.315 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=21...
+2026-11-12 12:03:08.331 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=21...
+2026-11-12 12:03:08.333 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.373 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=21...
+2026-11-12 12:03:08.409 | INFO     | normalized_covariance.normcovar:compute_normcovar_xr:751 - Starting normcovar computation (xarray) for w=21
+2026-11-12 12:03:08.413 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:104 - Computing local_mean_var.
+2026-11-12 12:03:08.415 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:108 - Filling nans.
+2026-11-12 12:03:08.416 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:115 - Computing smoothed variance.
+2026-11-12 12:03:08.430 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:123 - Computing image covariance.
+2026-11-12 12:03:08.432 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:127 - Average product_of_local_devs.
+2026-11-12 12:03:08.451 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:833 - Window 33: computing DoB, local std, normcovar...
+2026-11-12 12:03:08.451 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=33...
+2026-11-12 12:03:08.453 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.474 | INFO     | normalized_covariance.normcovar:compute_deviation_from_local_mean_xr:693 - Starting 'deviation_from_local_mean' computation (xarray) for w=33...
+2026-11-12 12:03:08.491 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=33...
+2026-11-12 12:03:08.493 | DEBUG    | normalized_covariance.normcovar_utils:fill_nans:72 - Filling NaNs of input image.
+2026-11-12 12:03:08.534 | INFO     | normalized_covariance.normcovar:compute_local_var_xr:710 - Starting local std computation (xarray) for w=33...
+2026-11-12 12:03:08.570 | INFO     | normalized_covariance.normcovar:compute_normcovar_xr:751 - Starting normcovar computation (xarray) for w=33
+2026-11-12 12:03:08.574 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:104 - Computing local_mean_var.
+2026-11-12 12:03:08.576 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:108 - Filling nans.
+2026-11-12 12:03:08.576 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:115 - Computing smoothed variance.
+2026-11-12 12:03:08.590 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:123 - Computing image covariance.
+2026-11-12 12:03:08.594 | DEBUG    | normalized_covariance.normcovar:_compute_normcovar_arr:127 - Average product_of_local_devs.
+2026-11-12 12:03:08.611 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:850 - Stacking normcovar to false-colour RGB...
+2026-11-12 12:03:08.622 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:861 - Converting rgb to xr.DataArray...
+2026-11-12 12:03:08.634 | INFO     | normalized_covariance.normcovar:fully_process_image_pair_xr:876 - Resampling rgb by zoom_x=10, zoom_y=10 (method=bilinear)...
+Traceback (most recent call last):
+  File "/cleanroom/experiments/normcovar/nc_ref.py", line 96, in <module>
+    results = normcovar.fully_process_image_pair_xr(
+        img1, img2, windows=WINDOWS, NP_min=NP_MIN, NP_max=NP_MAX, resample_rgb=True,
+        resample_method="bilinear", zoom_x=10, zoom_y=10, landmask_shapefile_path=landmask_shapefile_path,
+        erode_landmask=None, apply_landmask_to_rgb=True)
+  File "/opt/gdal-conda/.pixi/envs/release/lib/python3.14/site-packages/normalized_covariance/normcovar.py", line 877, in fully_process_image_pair_xr
+    results["rgb_resampled"] = xr_reproject(
+                               ~~~~~~~~~~~~^
+        results["rgb"],
+        ^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        dtype=np.uint8,
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/opt/gdal-conda/.pixi/envs/release/lib/python3.14/site-packages/odc/geo/_xr_interop.py", line 827, in xr_reproject
+    return _xr_reproject_da(
+        src, how, resampling=resampling, dst_nodata=dst_nodata, dtype=dtype, **kw
+    )
+  File "/opt/gdal-conda/.pixi/envs/release/lib/python3.14/site-packages/odc/geo/_xr_interop.py", line 990, in _xr_reproject_da
+    fill_value = resolve_fill_value(dst_nodata, src_nodata, dtype)
+  File "/opt/gdal-conda/.pixi/envs/release/lib/python3.14/site-packages/odc/geo/math.py", line 216, in resolve_fill_value
+    return dtype.type(src_nodata)
+           ~~~~~~~~~~^^^^^^^^^^^^
+ValueError: cannot convert float NaN to integer

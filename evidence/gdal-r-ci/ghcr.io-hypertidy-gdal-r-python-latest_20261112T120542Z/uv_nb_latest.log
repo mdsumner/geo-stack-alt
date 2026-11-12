@@ -1,0 +1,13 @@
+Using Python 3.14.4 environment at: /opt/gdal-py
+Resolved 106 packages in 891ms
+   Updating https://github.com/jlo031/normalized_covariance (d6843d2a31b57bb7e42ca531aff5077ea4a56fe4)
+    Updated https://github.com/jlo031/normalized_covariance (d6843d2a31b57bb7e42ca531aff5077ea4a56fe4)
+   Building normalized-covariance @ git+https://github.com/jlo031/normalized_covariance@d6843d2a31b57bb7e42ca531aff5077ea4a56fe4
+      Built normalized-covariance @ git+https://github.com/jlo031/normalized_covariance@d6843d2a31b57bb7e42ca531aff5077ea4a56fe4
+Prepared 3 packages in 1.60s
+Uninstalled 1 package in 2ms
+Installed 3 packages in 6ms
+ + loguru==0.7.3
+ + normalized-covariance==0.2.1 (from git+https://github.com/jlo031/normalized_covariance@d6843d2a31b57bb7e42ca531aff5077ea4a56fe4)
+ - rioxarray==0.24.0
+ + rioxarray==0.22.0

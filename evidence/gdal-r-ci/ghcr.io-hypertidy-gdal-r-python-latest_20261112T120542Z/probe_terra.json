@@ -1,0 +1,30 @@
+{
+  "lang": "R",
+  "R": "4.6.2",
+  "packages": {
+    "sf": "1.1.4",
+    "terra": "1.9.58",
+    "gdalraster": "2.7.0.9003",
+    "vapour": "0.20.0",
+    "wk": "0.9.5",
+    "ximage": "0.1.0"
+  },
+  "sf_ext": {
+    "GEOS": "3.15.0",
+    "GDAL": "3.13.3",
+    "proj.4": "9.9.0",
+    "GDAL_with_GEOS": "true",
+    "USE_PROJ_H": "true",
+    "PROJ": "9.9.0"
+  },
+  "terra_gdal": "3.13.3",
+  "terra": {
+    "seconds": 6.11,
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 72.828,
+    "max": 1426.728,
+    "mean": 558.9184
+  },
+  "libs": ["/usr/local/lib/libgdal.so.39.3.13.3", "/usr/local/lib/libgeos_c.so.1.21.0", "/usr/local/lib/libgeos.so.3.15.0", "/usr/local/lib/libproj.so.25.9.9.0"]
+}

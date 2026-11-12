@@ -17,7 +17,7 @@
 
 ## Next
 
-- Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
+- Explain the `terra::project` difference (same GDAL, different mean: on 3.8.4 and on 3.13.3).
 - fast-ice SAM/SVM on the port's SAM input.
 - Run the project ports on Nectar, Setonix and a laptop, and check file-count quotas.
 - `r-ximage` on conda-forge, so the whole R side is in `pixi.lock`.

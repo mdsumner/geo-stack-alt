@@ -16,6 +16,7 @@ book:
       chapters:
         - install.qmd
         - one-gdal.qmd
+        - containers.qmd
     - part: "Real work"
       chapters:
         - projects.qmd

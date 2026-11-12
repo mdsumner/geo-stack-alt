@@ -1,0 +1,5 @@
+052_py {'img1': 0, 'img2': 0, 'normcovar_11': 0, 'normcovar_21': 0, 'normcovar_33': 0, 'rgb': 0, 'rgb_resampled': 5, 'landmask': 0, 'landmask_resampled': 10463, 'rgb_landmasked': 0, 'rgb_resampled_landmasked': 31384}
+052_py_odc {'img1': 0, 'img2': 0, 'normcovar_11': 0, 'normcovar_21': 0, 'normcovar_33': 0, 'rgb': 0, 'rgb_resampled': 0, 'landmask': 0, 'landmask_resampled': 0, 'rgb_landmasked': 0, 'rgb_resampled_landmasked': 0}
+odc_py {'hh': 0, 'mask': 0}
+odc_r {'hh': 0, 'mask': 0}
+py_r {'img1': 2367947, 'img2': 2367981, 'normcovar_11': 2367981, 'normcovar_21': 2367981, 'normcovar_33': 2367981, 'rgb': 51, 'rgb_resampled': 0, 'landmask': 0, 'landmask_resampled': 0, 'rgb_landmasked': 28, 'rgb_resampled_landmasked': 0}

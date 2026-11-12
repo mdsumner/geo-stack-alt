@@ -1,0 +1,56 @@
+{
+  "lang": "R",
+  "R": "4.5.3",
+  "packages": {
+    "gdalraster": "2.7.0",
+    "vapour": "0.20.0",
+    "wk": "0.9.5",
+    "ximage": "0.1.0"
+  },
+  "gdal_vapour": "GDAL 3.13.3 \"Iowa City\", released 2026/08/13",
+  "gdal_gdalraster": "GDAL 3.13.3 \"Iowa City\", released 2026/08/13",
+  "driver_count": 211,
+  "drivers": {
+    "GTiff": true,
+    "COG": true,
+    "VRT": true,
+    "netCDF": true,
+    "HDF5": true,
+    "Zarr": true,
+    "Parquet": true,
+    "GPKG": true,
+    "FlatGeobuf": true,
+    "GeoJSON": true,
+    "ESRI Shapefile": true,
+    "JP2OpenJPEG": true,
+    "KEA": true,
+    "PDF": true,
+    "STACIT": true,
+    "GTI": true,
+    "PostgreSQL": true,
+    "OpenFileGDB": true,
+    "LIBKML": true,
+    "WMS": true,
+    "WMTS": true
+  },
+  "vapour_seconds": 5.93,
+  "vapour": {
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 72.837,
+    "max": 1426.728,
+    "mean": 558.9198
+  },
+  "gdalraster_seconds": 5.12,
+  "gdalraster": {
+    "dim": [1000, 1000],
+    "valid": 1000000,
+    "min": 72.837,
+    "max": 1426.728,
+    "mean": 558.9198
+  },
+  "png": "ok",
+  "capabilities_png": true,
+  "capabilities_cairo": true,
+  "libs": ["/opt/gdal-conda/.pixi/envs/release/lib/libgdal.so.39.3.13.3", "/opt/gdal-conda/.pixi/envs/release/lib/libgeos_c.so.1.20.5", "/opt/gdal-conda/.pixi/envs/release/lib/libgeos.so.3.14.1", "/opt/gdal-conda/.pixi/envs/release/lib/libproj.so.25.9.9.0"]
+}

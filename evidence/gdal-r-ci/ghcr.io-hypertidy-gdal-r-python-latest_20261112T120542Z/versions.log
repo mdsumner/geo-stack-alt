@@ -1,0 +1,11 @@
+GDAL 3.13.3 "Iowa City", released 2026/08/13
+3.14.4 gdal 3.13.3 numpy 2.5.4 scipy 1.18.1 rasterio 1.5.2 3.13.3 pyogrio 0.13.0 3.13.3 xarray 2026.4.1.dev32+g71cfb13ac pandas 3.1.1 dask 2026.6.0.post13+g6c8edcef0
+R version 4.6.2 (2026-10-29) 
+gdalraster 2.7.0.9003 
+vapour 0.20.0 
+wk 0.9.5 
+sf 1.1.4 
+terra 1.9.58 
+reticulate 1.47.0 
+2.5G	/usr/local
+2.1G	/opt/gdal-py

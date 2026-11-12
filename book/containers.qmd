@@ -1,0 +1,150 @@
+# Prebuilt containers: gdal-r-ci and gdal-conda {#sec-containers}
+
+The install paths in [chapter @sec-install] all start from a bare image and build an environment.
+A third route skips that step: a prebuilt image with GDAL, R and Python already in it, linked to
+one GDAL. [hypertidy/gdal-r-ci](https://github.com/hypertidy/gdal-r-ci) publishes two families
+of these:
+
+- **The gdal-r-ci chain** (`gdal-system` → `gdal-r` → `gdal-r-full` → `gdal-r-python` → ...)
+  builds GDAL, PROJ and GEOS from source into `/usr/local` on Ubuntu 26.04. R and a uv-managed
+  Python venv (`/opt/gdal-py`) link to them; rasterio, pyogrio, fiona, shapely and pyproj are
+  built from source against the same libraries. `:latest` tracks GDAL releases (rebuilt
+  weekly), `:dev` tracks GDAL master (daily). It exists for CI: `R CMD check` of gdalraster, sf,
+  terra, vapour and gdalcubes against current and next GDAL.
+- **gdal-conda** is the conda-forge counterpart: one pixi environment (conda-forge `libgdal`
+  plus plugins, R and Python binaries) copied into a plain Ubuntu image, built from a
+  committed `pixi.lock`. It's the same kind of environment as arm B, made once and shipped.
+
+Both ran the same arm here (`cleanroom/arms/gdal-r-ci.sh`): the standard probe, a census of the
+libraries one process loads, the GA tutorial load with stacgrid against odc-stac, and the
+fast-ice NormCovar ports and notebook. Nothing was installed except what each step needed and
+the images lack: ximage, odc-stac, and the notebook's own packages, added the way the gdal-r-ci
+README suggests (uv into the venv, or pip into the conda env).
+
+## What's in them
+
+| | `gdal-r-python:latest` | `gdal-conda:latest` | pixi arm B, for scale |
+|---|---|---|---|
+| Built | GDAL/PROJ/GEOS from source, Ubuntu 26.04 | conda-forge via `pixi.lock` | conda-forge, solved at install |
+| Image size (disk / compressed) | 11.3 GB / 3.1 GB | 3.8 GB / 0.9 GB | 1.8 GB env (Python and R) |
+| GDAL / PROJ / GEOS | 3.13.3 / 9.9.0 / 3.15.0 | 3.13.3 / 9.9.0 / 3.14.1 | 3.13.3 / 9.9.0 / 3.15.0 |
+| Python / R | 3.14.4 / 4.6.2 | 3.14.8 / 4.5.3 | 3.15.2 / 4.5.3 |
+| R GDAL packages | gdalraster, vapour, sf, terra (source) | gdalraster, sf, terra (binaries), vapour (source) | gdalraster, vapour (binaries) |
+| Python GDAL packages | osgeo.gdal, rasterio, pyogrio, fiona (source) | the same, binaries | osgeo.gdal |
+| GDAL drivers (osgeo.gdal) | 212 | 212 | 212 with `libgdal-arrow-parquet` |
+| Install step to use | `docker pull` | `docker pull`, or `pixi install --locked` from its repo | `pixi install` |
+
+Image sizes are `docker images` on this host. `gdal-r-python` also carries a large Python data
+stack (xarray, zarr, kerchunk, virtualizarr, dask, jupyterlab, ...) and R tooling for package
+checks; the size buys a workbench, not just GDAL.
+
+## One GDAL, checked
+
+One Python process importing `osgeo.gdal`, rasterio, pyogrio, fiona, shapely, pyproj and geopandas,
+and one R process loading sf, terra, gdalraster and vapour and importing `osgeo.gdal`, rasterio and
+pyogrio through reticulate. The shared libraries each process has mapped:
+
+| | `gdal-r-python` | `gdal-conda` |
+|---|---|---|
+| libgdal | `/usr/local/lib/libgdal.so.39.3.13.3` | `.../envs/release/lib/libgdal.so.39.3.13.3` |
+| libproj | `/usr/local/lib/libproj.so.25.9.9.0` | `.../envs/release/lib/libproj.so.25.9.9.0` |
+| libgeos_c | `/usr/local/lib/libgeos_c.so.1.21.0` | `.../envs/release/lib/libgeos_c.so.1.20.5` |
+| Files per library, Python process | 1 | 1 |
+| Files per library, R + reticulate process | 1 | 1 (with terra loaded last, below) |
+
+That's the strongest form of the one-GDAL property met so far: not only osgeo.gdal and the R
+packages, but rasterio, pyogrio and sf, in both languages, in one process. Against it, the pip
+wheels put two GDALs, two PROJs and two GEOSs in one Python process ([chapter @sec-install]).
+
+## The same answers
+
+| Check | `gdal-r-python` | `gdal-conda` |
+|---|---|---|
+| DEM warp mean: osgeo.gdal, rasterio, gdalraster, vapour | 558.9198, all four | 558.9198, all four |
+| DEM warp mean: `terra::project` | 558.9184 | 558.9184 |
+| GA tutorial load: stacgrid Python, R vs odc-stac | 0 pixels differ | 0 pixels differ |
+| NormCovar: Python port vs R port | RGB 51 of 7.1 M by 1; SAM input equal | the same |
+
+The warp agrees with arm B's 558.9198, the GDAL 3.13.3 value from [chapter @sec-one-gdal], across
+three ways of getting 3.13.3. `terra::project` differs from the others on the same GDAL here too,
+as it did on Ubuntu's 3.8.4: the open terra question isn't specific to one build.
+
+## What they don't fix
+
+The fast-ice notebook, run in each image with its extra packages added (odc-stac,
+stac-geoparquet, normalized_covariance; the images supply rasterio 1.5.2 and odc-geo 0.5.4):
+
+| The notebook in | odc-stac as resolved today (0.5.3) | odc-stac 0.5.2 |
+|---|---|---|
+| `gdal-r-python` | `ValueError: cannot convert float NaN to integer` | Runs; **SAM input black**: 31,384 values differ from the port, landmask all 1 |
+| `gdal-conda` | the same `ValueError` | the same black SAM input |
+
+These are exactly the "resolved today" and "today's rasterio" rows of [chapter @sec-fast-ice].
+In both images, the port with odc-geo's destination nodata (`NC_ODC_NODATA=1`) reproduces the
+notebook's black result exactly, and the plain port gives the correct one.
+
+One libgdal is necessary, not sufficient. These failures live in the Python packages above GDAL
+(odc-stac, xarray, odc-geo, rasterio), and an image built for GDAL consistency carries whatever
+versions of those were current at build time. What protected fast-ice was its own lockfile. An
+image pinned by digest is a lockfile of a kind, but adding a project's packages to it, as here,
+resolves them fresh, with no lock.
+
+Three more things turned up, each from mixing packages in one image:
+
+- **dask query planning in gdal-r-python.** The image installs dask and xarray from git and sets
+  `DASK_ARRAY__QUERY_PLANNING=True`. Under it, odc-stac can't load anything: odc-loader 0.6.5
+  fails with `TypeError: Array.__init__() got an unexpected keyword argument 'dtype'`. With
+  `-e DASK_ARRAY__QUERY_PLANNING=False` the load works and equals stacgrid in every pixel.
+  gdal-conda (dask 2026.8.0, the variable unset) is unaffected. Noted in gdal-r-ci's
+  `docs/dask-query-planning-odc.md`.
+- **terra blanks `GDAL_DATA` for the whole process.** On load, terra sets the GDAL config option
+  `GDAL_DATA` to its own bundled data directory, or to `""` when it has none, which is every
+  build except the CRAN Windows and macOS binaries (`src/RcppFunctions.cpp`, `gdal_init()`). In
+  gdal-conda, importing pyogrio through reticulate after `library(terra)` then fails: "Found GDAL
+  data directory at .../share/gdal but it does not appear to correctly contain GDAL data files".
+  Importing the Python modules first, or not loading terra, works. In gdal-r-python the same
+  sequence loaded (its source-built GDAL probably falls back to the data path compiled into it),
+  but `GDAL_DATA` is `""` there too. terra also sets `OGR_CT_FORCE_TRADITIONAL_GIS_ORDER=YES`
+  process-wide, which changes axis order for every other GDAL user in that process.
+- **normalized_covariance declares `requires-python <3.14`**, and both images have Python 3.14.
+  pip refuses it (`--ignore-requires-python` overrides); `uv pip install` installed it without
+  comment. It ran correctly on 3.14 in both.
+
+## What they get you
+
+- **One GDAL, PROJ and GEOS across everything**, including rasterio, pyogrio, sf and terra, in
+  R and Python, checked down to the mapped files.
+- **No install at all.** `docker run` or, on HPC, Singularity/Apptainer from the same image
+  (Setonix runs it; a do-it-yourself workflow, but it works). An install that takes minutes and
+  can fail becomes a pull that can't.
+- **A pin by digest.** `image@sha256:...` fixes every library and package, R and Python
+  together, which no single lockfile in this book does: pixi's lock doesn't hold ximage, and
+  apt has no lock.
+- **GDAL master, daily** (`:dev`), for checking what the next release will change, the way the
+  3.13 warp change could have been caught before release.
+- **The newest GEOS** in gdal-r-python (3.15.0, against conda-forge's 3.14.1 here).
+
+And what to weigh:
+
+- **Size.** `gdal-r-python` is 11 GB on disk: a workbench, far more than the alternative stack
+  needs. gdal-conda at 3.8 GB is closer to an environment.
+- **Frontier choices.** The gdal-r-ci chain is built for CI against current and next GDAL, so it
+  carries development dask and xarray and their settings. Good for finding breakage early, a
+  surprise for someone expecting a stable notebook environment.
+- **Packages added on top aren't locked.** For a project, write them down as a layer (a
+  Dockerfile `FROM` the image by digest, with pinned versions), or use gdal-conda's
+  `pixi.toml` as the starting point for a project lockfile.
+
+## Which to use
+
+| If you want | Use |
+|---|---|
+| The alternative stack for a project, reproducible | pixi with a committed `pixi.lock` (arm B), or gdal-conda's workspace as a base |
+| The same, on a shared Ubuntu machine with no pixi | apt `python3-gdal` plus r2u |
+| Nothing to install, or HPC through Singularity | `gdal-conda` by digest; add the project's packages as a pinned layer |
+| R and Python packages built from source against one GDAL, current or master | the gdal-r-ci chain (`gdal-r-full`, `gdal-r-python`), by digest |
+| Package CI against the next GDAL | gdal-r-ci `:dev` and its reusable workflow |
+
+Evidence: [`evidence/gdal-r-ci/`](https://github.com/mdsumner/geo-stack-alt/tree/main/evidence/gdal-r-ci)
+(the `T120542Z` run) and [`evidence/gdal-conda/`](https://github.com/mdsumner/geo-stack-alt/tree/main/evidence/gdal-conda),
+each with the image digest, every step's log, and `pip-freeze.txt`.

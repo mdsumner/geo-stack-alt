@@ -1,0 +1,12 @@
+{
+ "libs": [
+  "/usr/local/lib/libgdal.so.39.3.13.3",
+  "/usr/local/lib/libgeos.so.3.15.0",
+  "/usr/local/lib/libgeos_c.so.1.21.0",
+  "/usr/local/lib/libproj.so.25.9.9.0"
+ ],
+ "proj": "9.9.0",
+ "shapely_geos": "3.15.0",
+ "rasterio_gdal": "3.13.3",
+ "pyogrio_gdal": "3.13.3"
+}

@@ -54,7 +54,8 @@ It is not for experts who build GDAL themselves.
 
 ## How to read it
 
-- [Part I](install.qmd) compares the install paths and explains why one libgdal matters.
+- [Part I](install.qmd) compares the install paths, explains why one libgdal matters, and
+  tests two prebuilt container images.
 - [Part II](projects.qmd) ports four real projects, builds `stacgrid` for STAC loads, and
   follows the fast-ice notebook to the pixel.
 - [Part III](versions.qmd) collects what moved pixels: version interactions and hidden

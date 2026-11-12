@@ -1,0 +1,6 @@
+Using Python 3.14.4 environment at: /opt/gdal-py
+Resolved 57 packages in 563ms
+Prepared 2 packages in 31ms
+Installed 2 packages in 11ms
+ + odc-loader==0.6.5
+ + odc-stac==0.5.3

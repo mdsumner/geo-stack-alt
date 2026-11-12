@@ -1,0 +1,1 @@
+ghcr.io/hypertidy/gdal-conda@sha256:1366f4cf006b6ec03872dfc1e110896eea301556901f415ac4f8b84cee816bdf

@@ -1,0 +1,4 @@
+{
+  "libs": ["/usr/local/lib/libgdal.so.39.3.13.3", "/usr/local/lib/libgeos_c.so.1.21.0", "/usr/local/lib/libgeos.so.3.15.0", "/usr/local/lib/libproj.so.25.9.9.0"],
+  "GDAL_DATA_after_terra": ""
+}

@@ -1,0 +1,5 @@
+Error in py_module_import(module, convert = convert) : 
+  ValueError: Found GDAL data directory at /opt/gdal-conda/.pixi/envs/release/share/gdal but it does not appear to correctly contain GDAL data files
+Run `reticulate::py_last_error()` for details.
+Calls: <Anonymous> -> py_module_import
+Execution halted

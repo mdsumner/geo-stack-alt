@@ -78,5 +78,10 @@ On Ubuntu without pixi: apt `python3-gdal`, plus R through [r2u](https://eddelbu
 - **GDAL's Parquet driver pre-filters on a `bbox` column** and drops null and antimeridian bboxes.
   Set `OGR_PARQUET_USE_BBOX=NO` and test geometries yourself.
 - **DEA's STAC API takes POST without advertising it**, and `intersects` only by POST.
+- **terra sets GDAL config options for the whole process** on load: `GDAL_DATA` (to `""` outside
+  the CRAN Windows/macOS binaries) and `OGR_CT_FORCE_TRADITIONAL_GIS_ORDER=YES`. Mixing R and
+  Python through reticulate, import the Python GDAL modules before `library(terra)`.
+- **odc-stac fails under dask's array query planning** (`DASK_ARRAY__QUERY_PLANNING=True`, set in
+  the gdal-r-ci Python images): run it with the variable set to `False`.
 - **gdalraster `rasterize()` creating its output** won't take `band=`, and needs size and
   resolution; to burn into an existing raster, pass an open `GDALRaster` object.
