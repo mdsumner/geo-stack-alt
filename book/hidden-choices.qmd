@@ -1,0 +1,33 @@
+# Hidden choices that change pixels {#sec-hidden}
+
+Reproducing odc-stac's output to the pixel was possible, but only after finding the choices it
+makes for you. None is wrong. They just aren't visible at the call site, and each one changes
+pixels when it differs from what another tool does.
+
+| Choice | odc-stac / odc-geo | GDAL's own default | Effect when it differs |
+|---|---|---|---|
+| Overviews when downsampling | read (`-ovr AUTO`) | the same in gdalwarp; never through a STACIT VRT | Nearly every value at 20 m → 200 m, by up to 10 dB |
+| Overlap merge | first valid wins, in (time, id) order | last wins in a VRT mosaic | Burst overlaps, about 9% of pixels; 449,890 S2 pixels depend on the id tie-break |
+| Solar day | one longitude for the whole load (grid centre), whole hours | n/a | 150 IW items at 167°E: 30 groups, against 60 per item |
+| Scale/offset | ignored (raw values) | n/a | S2 across baseline 04.00: 6 of 17 groups mix offsets; one offset after the merge is wrong in 1.6-2.3 M of 3.9 M pixels |
+| Resample kernel | always `XSCALE=1 YSCALE=1` | widen with the scale | A "bilinear zoom /10" is 2x2 interpolation, not an area average |
+| Integer resample nodata | fill value passed as nodata | none | The black SAM input (rasterio ≥ 1.5.1) |
+| Multi-band assets | bands counted from `raster:bands` only | the file's bands | Earth Search's 3-band TCI loads as one float32 band; `visual.2` is a KeyError |
+
+In `stacgrid` each of the STAC ones is an argument (`overviews=`, `fuse=`, `grid=` for the
+solar-day longitude, `scale=`, `"asset.N"`), with odc-stac's behaviour as the default. That's why
+its outputs can be checked against odc-stac pixel for pixel, and why a choice can be changed on
+purpose. In the NormCovar port, the resample kernel and nodata are explicit `gdal.Warp`
+arguments.
+
+## Write them down
+
+Whichever loader you use, record these at the call site and in the output's metadata:
+
+1. overviews or full resolution;
+2. merge order in overlaps;
+3. the grouping rule (and, for solar day, which longitude);
+4. whether scale and offset were applied, and per item or after the merge;
+5. the resampling kernel and its scale;
+6. destination nodata;
+7. the GDAL version.

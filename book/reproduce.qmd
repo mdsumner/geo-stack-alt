@@ -1,0 +1,54 @@
+# Reproducing the evidence {#sec-reproduce}
+
+Clone [the repo](https://github.com/mdsumner/geo-stack-alt) and run from its root.
+
+Every run needs only Docker. Each run starts a fresh container and writes to
+`evidence/<arm>/<image>_<UTC time>/`.
+
+```bash
+bash cleanroom/run.sh pip                       # arm A
+bash cleanroom/run.sh pixi                      # arm B, gdal only
+PIXI_EXTRA=libgdal bash cleanroom/run.sh pixi   # arm B with all plugins
+IMAGE=ubuntu:22.04 bash cleanroom/run.sh pixi   # another base image
+VARIANT=min bash cleanroom/run.sh pixi-py       # Python only (default packages in the script)
+VARIANT=like PIXI_PKGS="python numpy gdal libgdal matplotlib-base rasterio geopandas" \
+  bash cleanroom/run.sh pixi-py
+bash cleanroom/run.sh r-r2u                     # R via r2u (also r-p3m, r-source)
+bash cleanroom/run.sh warp-versions             # GDAL 3.10-3.13, same warp
+IMAGE=ubuntu:26.04 bash cleanroom/run.sh apt-all  # python3-gdal + r2u, one apt libgdal
+bash cleanroom/run.sh tas-s1-compare            # tasmania-s1-change: rasterio vs osgeo.gdal port
+bash cleanroom/run.sh tas-s1-figure             # ... and its figures in R (ximage, gdalraster)
+MOUNT=$HOME/Git/aeo26-workshop:/aeo26:ro bash cleanroom/run.sh aeo26-compare
+bash cleanroom/run.sh ga-sar-ice-compare        # odc-stac vs osgeo.gdal vs STACIT
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid   # stacgrid.py/.R vs odc-stac
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh stacgrid-parallel   # 1-16 workers
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh fast-ice   # GA fast-ice notebook loads (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh scale      # raster:bands scale/offset (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh multiband  # multi-band assets (pixi)
+MOUNT=$PWD/stacgrid:/stacgrid:ro bash cleanroom/run.sh normcovar  # fast-ice NormCovar, 3 notebook stacks vs ports
+MOUNT="$HOME/Git/aeo26-workshop:/aeo26:ro $PWD/stacgrid:/stacgrid:ro" \
+  bash cleanroom/run.sh pixi-projects           # all four project ports in one pixi env
+MOUNT="$PWD/evidence:/ev:ro" PIXI_RUN=pixi-projects/<run> \
+  bash cleanroom/run.sh cross-stack             # pixi outputs vs the apt runs
+```
+
+`MOUNT=` adds read-only bind mounts (a project checkout, `stacgrid/`, `evidence/`), space-separated.
+
+| Path | What |
+|---|---|
+| `cleanroom/run.sh` | Runs one arm in a fresh container, keeps logs and timings |
+| `cleanroom/arms/*.sh` | One script per install path or experiment |
+| `cleanroom/probe/` | The shared probe: `probe_gdal.py`, `probe_rasterio.py`, `probe.R`, `common.py` |
+| `cleanroom/experiments/` | Scripts behind the warp finding, and the project ports (`tas-s1/`, `aeo26/`, `ga-sar-ice/`, `stacgrid/`), each beside an unchanged copy of the original; `fast-ice/` has the notebooks' load cells as scripts; `normcovar/` their NormCovar cells and the Python and R ports |
+| `stacgrid/` | STAC items → groups → grid, Python and R |
+| `evidence/` | Outputs of each run (`.tif` files are not kept in git: re-run to get them) |
+| `findings/` | Write-ups |
+
+
+Each run directory holds the container image digest, `steps.tsv` (each step's wall time and
+exit status), the full logs, any lockfiles, and the comparison output. `.tif` outputs are not
+kept in git; rerun the arm to get them.
+
+The project arms read public data: DEA Sentinel-1 on public S3, DEA's STAC API and STAC-GeoParquet
+indexes, Earth Search Sentinel-2 COGs, and the SCAR Antarctic Digital Database coastline. Two
+arms need a checkout of the project they port (`MOUNT=`).

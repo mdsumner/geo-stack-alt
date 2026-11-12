@@ -1,0 +1,59 @@
+# Why one GDAL {#sec-one-gdal}
+
+The probe in [chapter @sec-install] gave two answers for the same DEM warp:
+
+| Stack | GDAL | min | max | mean |
+|---|---|---|---|---|
+| pip: rasterio 1.5.2 wheel | 3.12.2 | 73.000 | 1425.759 | 558.9196 |
+| apt `libgdal-dev` + osgeo.gdal | 3.8.4 | 73.000 | 1425.759 | 558.9196 |
+| pixi: osgeo.gdal, gdalraster, vapour | 3.13.3 | 72.837 | 1426.728 | 558.9198 |
+
+The difference in the mean is small, but 99.6% of cells differ, the median absolute difference is
+0.32 m, and the largest is 10.9 m. The 3.13 output is about 4% rougher.
+
+## Tracking it down
+
+Each step ran in a clean container with conda-forge GDAL.
+
+1. **The version, not the binding.** `gdal.Warp` alone: 3.10.3 = 3.11.5 = 3.12.4, all different
+   from 3.13.3.
+2. **The resampling kernel, not the geometry.** `near` and `average` are bit-identical across
+   3.12 and 3.13; `bilinear` and `cubic` differ. 3.13 `bilinear` equals 3.12 `bilinear` with
+   `-wo XSCALE=1 -wo YSCALE=1`.
+3. **Scale computed but not applied.** With `CPL_DEBUG=ON`, 3.13 logs
+   `dfXScale = 0.588881, dfYScale = 0.746642`, yet every explicit XSCALE/YSCALE gives
+   bit-identical output in 3.13. In 3.12 each value changes the output.
+4. **A threshold at 2x.** In a synthetic offline repro (same CRS, Float32, bilinear), 3.13
+   applies no anti-aliasing for 10 m → 12.5, 15 or 17.5 m, and does for 20, 25 and 40 m. 3.12
+   anti-aliases all of them. Integer 2x downsampling is unaffected for every data type and kernel.
+
+The cause is GDAL commit `7e18bd36cf` (released in 3.13.0), which improved the XSCALE/YSCALE
+computation and also widened when the 4-sample (no anti-aliasing) bilinear and bicubic formula
+is used, from "not downsampling, within 5%" to "downsampling up to 50%":
+
+```c
+// 3.12 alg/gdalwarpkernel.cpp
+const int bUse4SamplesFormula = dfXScale >= 0.95 && dfYScale >= 0.95;
+// 3.13: CanUse4SamplesFormula()
+if (poWK->dfXScale > 0.5 && poWK->dfYScale > 0.5) return true;
+```
+
+It's intentional, and not specific to any packaging. Which result is "right" depends on
+intent: 3.12 averages more (smoother, less aliasing), 3.13 is closer to point interpolation
+(sharper).
+
+Details: [`findings/2026-11-10-gdal-3.13-warp.md`](https://github.com/mdsumner/geo-stack-alt/blob/main/findings/2026-11-10-gdal-3.13-warp.md);
+evidence in `evidence/warp-versions/`, `warp-variants/`, `warp-debug/`, `warp-scales/` and
+`warp-scope*/`; the GDAL-side note in
+[osgeo-upstream](https://github.com/mdsumner/osgeo-upstream/blob/main/notes/2026-11-10-warp-4sample-threshold.md).
+
+## What it says about the stacks
+
+- **"Identical answers" is a property of one GDAL,** not of a language or a binding.
+  osgeo.gdal, gdalraster and vapour agreed to the last digit because they shared one libgdal.
+  rasterio agreed with apt's GDAL 3.8 because both were before 3.13.
+- **The wheel stack hides which GDAL you have.** rasterio 1.5.2 ships 3.12.2 and pyogrio 0.13.0
+  ships 3.12.4, in the same process. When those wheels move to 3.13, warps like this one change
+  on `pip install -U`, without warning.
+- **A lockfile records the exact libgdal build,** and every language in the env uses it.
+- **Record the GDAL version and resampling method in every output** (GeoTIFF tags or a sidecar).

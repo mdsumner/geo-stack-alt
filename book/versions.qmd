@@ -1,0 +1,74 @@
+# When versions move under you {#sec-versions}
+
+The biggest problems found were not bugs in one package. Each one needed a combination of
+versions to show up, which is why no single package's tests caught it.
+
+| What | Combination | Effect | Evidence |
+|---|---|---|---|
+| fast-ice section 8 crash | odc-stac 0.5.3 attrs + xarray keeping attrs + odc-geo fill value | Notebook fails | `normcovar/` |
+| Black SAM input | odc-geo fill value as nodata + rasterio ≥ 1.5.1 + GDAL ≥ 3.11 nodata avoidance | Wrong output, no error | `normcovar/` |
+| pandas 3 | pandas 3 reads `datetime64[us]`; stac-geoparquet 0.8 only converts `[ns]` | `to_item_collection` fails (`TypeError`) | `fast-ice/` |
+| GeoParquet bbox | GDAL 3.13 Parquet driver pre-filters on a `bbox` column, drops null and antimeridian bboxes | 6 of 60 EW items returned, no warning | `fast-ice/` |
+| STACIT on old GDAL | DEA items carry `proj:code` only; GDAL 3.8.4 apparently needs `proj:epsg` (inferred, not bisected) | Ubuntu 24.04's GDAL can't mosaic DEA S1 ("No compatible asset found"); 3.12.2 can | `ga-sar-ice-compare/` |
+| Warp kernel | GDAL 3.13 stopped widening bilinear/cubic for downsampling < 2x | Same command, different DEM values on upgrade (up to 10.9 m) | [chapter @sec-one-gdal] |
+| Rasterize nodata | `gdal_rasterize` and `gdal vector rasterize` set NoData = 0 on outputs they create (3.10+) | A 0/1 mask's 0s become nodata | `normcovar/` |
+| Two GDALs in one process | rasterio and pyogrio wheels each bundle their own | 3.12.2 and 3.12.4 in one Python session | `pip/` |
+
+The pip/wheel default makes this worse in one specific way: which GDAL you get depends on which
+wheel did the work, and it moves on `pip install -U` without telling you.
+
+## The GDAL findings
+
+Three of these are GDAL behaviour, written up with offline repros in
+[osgeo-upstream](https://github.com/mdsumner/osgeo-upstream). Each was dated by running the
+repro on conda-forge builds of GDAL 3.9.3 to 3.13.3 in clean containers and reading the source.
+
+### Rasterize sets NoData = 0 (since 3.10.0)
+
+`gdal_rasterize`, without `-a_nodata`, sets NoData = 0 on every output it creates, with or without
+`-init`. GDAL 3.9.3 sets none.
+
+| GDAL | `gdal_rasterize`, no `-a_nodata` | `gdal vector rasterize`, no `--nodata` |
+|---|---|---|
+| 3.9.3 | none | (no `gdal` CLI) |
+| 3.10.3 | 0 | (no `gdal` CLI) |
+| 3.11.5, 3.12.3, 3.13.3 | 0 | 0 |
+
+The burnt values are right; only the nodata flag is wrong. The cause is the argument-parser port
+in 3.10.0 (commit `8d9ceabc12`): the nodata option became a `std::string`, passed on as
+`.c_str()`, which is never null, so the "was nodata given?" test always passes and an empty
+string is read as 0. The newer `gdal vector rasterize` calls the same library function and does
+the same.
+
+For a 0/1 mask this makes every unburnt cell nodata, and readers that honour nodata (gdalraster,
+for one) read them as NA. Workarounds: rasterize into an existing dataset, give `-a_nodata` a
+value outside the burn range, or unset nodata afterwards.
+
+### Warp rewrites values equal to the destination nodata (since 3.11.0)
+
+When the destination nodata is set and a valid output value equals it, the warp kernel changes
+it to the next representable value and warns once. Since 3.11.0 (commit `17a737fbd7`) it does
+so on every resampling path, nearest included; 3.9.3 and 3.10.3 keep the 0s. This is intended:
+it stops valid data being read as nodata.
+
+It became a problem downstream when rasterio 1.5.1 began passing `dst_nodata` through to the
+warp. `rasterio.warp.reproject(..., dst_nodata=0)` on a 0/1 uint8 array gives all 1s on rasterio
+1.5.1 and 1.5.2, and keeps the 0s on 1.5.0, on the same GDAL 3.13.3. odc-geo passes its fill
+value as `dst_nodata` for integer arrays, so every odc-geo integer resample now meets it.
+
+### The Parquet driver's bbox pre-filter
+
+With a spatial filter, GDAL 3.13.3's Parquet driver filters first on a struct column named
+`bbox`, even when the GeoParquet metadata declares no covering, and drops rows whose bbox is null
+or crosses the antimeridian (xmin > xmax, as STAC allows). On DEA's EW STAC-GeoParquet, 6 of the
+60 intersecting items came back. `--config OGR_PARQUET_USE_BBOX NO` returns all 60.
+
+## What to do about it
+
+- **Treat the lockfile as part of the result.** fast-ice's lock was the only one of three
+  installs that gave the right answer. Install with `pixi install --locked`.
+- **Keep a pinned reference run, and compare to it when upgrading.** Every finding in this
+  chapter came from comparing two runs that should have agreed.
+- **Fewer layers, fewer places to move.** The ports call GDAL directly for the geo steps, so
+  none of the downstream interactions above reach them. The GDAL-level ones still do, which is
+  why the lockfile matters for them too.

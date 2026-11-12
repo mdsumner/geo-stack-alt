@@ -1,0 +1,143 @@
+# STAC time stacks and stacgrid {#sec-stac}
+
+`odc.stac.load()` does more than read. It snaps a grid, groups items by solar day, chooses
+overviews, merges overlaps, and returns an xarray cube. To find out exactly what it does, GA's
+tutorial load (45 IW bursts, HH, solar day, 200 m EPSG:3031) was done three ways, and every
+difference was traced to a choice.
+
+## Three loaders, two choices
+
+| Loader | Overviews when downsampling | Overlaps | Equal to |
+|---|---|---|---|
+| `odc.stac.load()` 0.5.3 | read (`-ovr AUTO`) | first valid pixel wins | per-item `gdal.Warp`, defaults, first-wins: 0 pixels differ (GDAL 3.8.4 and 3.12.2) |
+| GDAL STACIT mosaic, warped | not available through the VRT | last valid wins | per-item `gdal.Warp`, `overviewLevel="NONE"`, last-wins: 0 of 226,943 differ |
+
+Nearest-neighbour from 20 m to 200 m: the overview choice changes nearly every value, by up to
+10 dB; the merge order changes only the burst overlaps, about 9% of pixels. STACIT has no time
+axis, so each solar day is its own search. It was no shorter than plain `osgeo.gdal` (78 lines
+against 92) and slower (about 29 s against 12 s; odc 6 s).
+
+## stacgrid
+
+[`stacgrid/`](https://github.com/mdsumner/geo-stack-alt/tree/main/stacgrid) is the layer
+`osgeo.gdal` lacks for STAC time stacks. It's about 300 lines in Python (`osgeo.gdal`, numpy,
+the standard library) and the same in R (`gdalraster`, `jsonlite`, `curl` for POST), with the
+same functions:
+
+| Step | Function |
+|---|---|
+| Search a STAC API (GET; POST when `intersects=` is given; follows `next`) | `stac_search()` |
+| Items from a STAC-GeoParquet file (OGR; needs `libgdal-arrow-parquet`) | `items_from_geoparquet()` |
+| Grid: bbox in the target CRS, snapped out to the resolution | `grid_from_bbox()` |
+| Grid: copy an existing raster's (odc's `geobox=`) | `grid_from_raster()` |
+| A grid's outline in lon/lat, to search with | `grid_footprint()` |
+| Group: `"solar_day"`, `"time"`, a property, or a function | `group_items()` |
+| Warp each group's items onto the grid and merge, in parallel | `stac_load()` |
+| An asset's `raster:bands` scale and offset | `scale_offset()` |
+| A band name to (asset, band): `"red"`, `"visual.2"` | `asset_band()` |
+
+GA's tutorial load in Python (from
+[`ga_py.py`](https://github.com/mdsumner/geo-stack-alt/blob/main/cleanroom/experiments/stacgrid/ga_py.py)):
+
+```python
+import stacgrid as sg
+BBOX = (73.5, -69.1, 74.0, -68.8)
+items = sg.stac_search("https://explorer.dev.dea.ga.gov.au/stac", ["ga_s1_nrb_iw_hh_1"],
+                       bbox=BBOX, datetime="2021-01-01/2021-03-01")
+grid = sg.grid_from_bbox(BBOX, "EPSG:3031", 200)
+groups = sg.group_items(items, "solar_day", grid=grid)
+out = sg.stac_load(groups, ["hh_gamma0", "oa_layover_shadow_mask"], grid, workers=8)
+# out["hh_gamma0"]: a (group, y, x) numpy array
+```
+
+The R functions have the same names and arguments. Every choice that changes pixels is an argument, with odc-stac's
+behaviour as the default:
+
+- `overviews="AUTO"` reads a coarser overview when downsampling (gdalwarp's and odc-stac's
+  default); `"NONE"` always reads full resolution, as STACIT does.
+- `fuse="first"`: in overlaps the first valid pixel in (datetime, id) order wins, as odc-stac;
+  `"last"`: the last wins, as a VRT mosaic.
+- `scale=True` applies **each item's own** scale and offset before the merge.
+- `group_items(items, "solar_day", grid=grid)` uses odc-stac's solar-day rule; without `grid`,
+  each item's own longitude.
+
+On Ubuntu 24.04 and 26.04 its defaults equal `odc.stac.load()` in every pixel, from both
+languages, and Python equals R in STACIT mode too.
+
+## Parallel reads
+
+`stac_load(..., workers=8)` runs the per-item warps in threads (Python; GDAL releases the GIL) or
+forked processes (R, `parallel::mclapply`). The merge still goes in item order, so pixels can't
+depend on which warp finishes first. GA tutorial load, 45 items, GDAL 3.8.4, wall time including
+the search, two passes:
+
+| workers | 1 | 4 | 8 | 16 |
+|---|---|---|---|---|
+| Python | 11.3, 12.0 s | 3.9, 3.9 s | 2.9, 2.8 s | 2.6, 2.6 s |
+| R | 12.6, 12.9 s | 8.3, 8.1 s | 5.3, 5.8 s | 4.4, 4.0 s |
+
+`odc.stac.load()` on the same load: 6.4 s. Every run, both languages, every worker count: 0
+pixels differ from odc-stac.
+
+## GA's fast-ice notebook loads
+
+GA's fast-ice notebooks (`abradley60/fast-ice` 4694c6c) load EW scenes from a
+STAC-GeoParquet index and IW scenes from DEA's STAC API. stacgrid against the notebooks'
+odc-stac calls (pixi, GDAL 3.13.3):
+
+| Notebook load | Items | Grid | Groups | Python, R vs odc-stac |
+|---|---|---|---|---|
+| `sentinel_1_load_demo`: IW from the API, ±6 days, `intersects=` a sample's footprint | 15 | from the sample GeoTIFF, 1702 × 1627 at 40 m | `sat:relative_orbit`: 2 | 0 of 2.9 M differ |
+| same, EW from STAC-GeoParquet, ±1 hour | 1 | same | 1 | 0 of 2.8 M |
+| `fast_ice_from_stac_xarray`: EW from STAC-GeoParquet, 2019 | 60 | bbox at 77.6°S, 1683 × 1407 at 40 m | `time`: 60 | 0 of 141.9 M |
+| same, IW from the API, `intersects=` the bbox outline | 150 | same | solar day: 30 | 0 of 69.0 M |
+
+Same item IDs, same grid, every case. Wall time for the xarray notebook's loads: odc-stac 68 s,
+stacgrid Python 77 s, R 114 s (R includes writing the stacks to GeoTIFF).
+
+Getting there exposed three things:
+
+- **POST.** The API wants `intersects` as JSON in a POST body; DEA's explorer accepts POST
+  without advertising it, and GET with `intersects` is a 400.
+- **GDAL's Parquet bbox pre-filter** drops items silently ([chapter @sec-versions]).
+- **odc-stac's solar-day rule** uses one longitude for the whole load, the grid centre, and
+  whole hours, `int(lon / 15)`. Passes near local midnight split differently from a per-item
+  longitude: 150 IW items at 167°E give 30 groups this way and 60 with per-item fractional hours.
+
+## Scale and offset
+
+odc-stac 0.5 ignores `raster:bands` scale and offset and returns stored values. Applying one
+offset afterwards is wrong wherever a group mixes items with different offsets.
+
+Earth Search `sentinel-2-l2a`, red band near Hobart, December 2021 to February 2022, 10 m: 23
+items in 17 solar-day groups. Scale is 0.0001 throughout; offset is 0 for processing baseline
+03.01 and -0.1 from 04.00. Late-2021 dates have two items, the original and a reprocessing, so
+**6 of the 17 groups mix offsets.**
+
+| | vs stacgrid `scale=True` (Python and R) |
+|---|---|
+| Reference: odc loads each item alone, scaled with its own metadata, merged first-valid in odc's order | 0 of 3.9 M pixels differ |
+| odc `groupby="solar_day"` raw, then offset -0.1 for all | 2.29 M differ, by 0.1 |
+| odc raw, then offset 0 for all | 1.60 M differ, by 0.1 |
+
+Merge order within a group is (datetime, id), as odc-stac sorts. Two duplicate pairs have
+identical datetimes, so the id decides; ordering by search order instead changed 449,890 pixels.
+
+## Multi-band assets
+
+Bands are named as odc-stac names them: `"visual.2"` is band 2 of asset `visual`. The bands asked
+for from one asset come from one warp per item.
+
+Earth Search's `visual` asset (TCI: 3 bands, uint8, nodata 0 in the file) describes its bands
+in `eo:bands` only. odc-stac 0.5.3 counts bands from `raster:bands` or STAC 1.1 `bands`, so it
+sees one band: `"visual"` loads band 1 as float32 with no nodata, and `"visual.2"` raises
+`KeyError`. stacgrid reads the band count from the file. With `raster:bands` added to the items
+so that odc could serve as the reference, all five requested bands
+(`visual.1`-`.3`, `visual`, `red`) were equal: 0 of 27.3 M pixels, Python and R.
+
+## What it doesn't replace
+
+odc-stac and xarray give lazy, chunked (dask) loads and the xarray ecosystem. stacgrid loads
+eagerly into numpy and is meant for the area and time ranges notebooks like GA's use. For
+continent-scale lazy cubes, odc-stac remains the tool. The point is pinning and explicit
+choices, not avoiding it.

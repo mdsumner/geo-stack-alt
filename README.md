@@ -3,7 +3,10 @@
 Is there a better default geospatial stack than "a venv and `pip install rasterio`"? This repo
 tests one candidate against that default, from a clean machine, and keeps the evidence.
 
-**Status (2026-11-11):** install paths compared on `ubuntu:24.04` and `26.04`; four real
+**The guide book:** <https://mdsumner.github.io/geo-stack-alt/> (source in [`book/`](book/)) sets out the
+detailed results as a guide. This README is the lab notebook.
+
+**Status (2026-11-12):** install paths compared on `ubuntu:24.04` and `26.04`; four real
 projects (Sentinel-1 and Sentinel-2) reproduced exactly on the alternative stack; one helper
 (`stacgrid/`, Python and R) for STAC time stacks, which also reproduces GA's fast-ice notebook loads, and a port of its NormCovar processing. Not yet run on Nectar, Setonix or a laptop.
 

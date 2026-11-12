@@ -1,0 +1,66 @@
+# Preface {.unnumbered}
+
+Most new geospatial Python work starts with "make a venv and `pip install rasterio`". When it needs
+STAC time stacks, it adds `odc-stac` and xarray. In R it's sf or terra, built separately. This
+book asks whether that is the best default, especially for Sentinel-1 and Sentinel-2 work, and
+tests one alternative against it from a clean machine.
+
+**The alternative:** use **GDAL itself** as the processing core, from Python (`osgeo.gdal`) and
+R (`gdalraster`, `vapour`, `wk`, with `ximage` for figures), with **one libgdal** shared by both,
+installed from **binaries** and **pinned**. That means either pixi with `pixi.lock` from
+conda-forge, or, on Ubuntu, everything from apt (`python3-gdal` plus R through r2u). Where the
+default leans on odc-stac, the alternative uses `stacgrid`, about 300 lines in each language
+that search, grid, group and merge with `gdal.Warp`.
+
+## The short answer
+
+- **The alternative gives the same pixels.** On four real projects (Tasmania Sentinel-1 change
+  detection, a Sentinel-2 workshop, Geoscience Australia's SAR sea-ice tutorial, and GA's
+  fast-ice notebooks including the NormCovar processing), the ports reproduced the originals
+  exactly. Where they didn't, the difference was traced to a named cause. Python and R agree to
+  the pixel, because they share one libgdal.
+- **The default's risk is not any one package.** It's that a fresh install resolves a new
+  combination of versions. The biggest problems found were all interactions between versions,
+  each invisible to the tests of the packages involved. One turned a well-built notebook's
+  output into an all-black image with no error ([chapter @sec-fast-ice]).
+- **Several choices that change pixels are hidden defaults** several layers down: overviews,
+  merge order, the solar-day rule, scale and offset, the resampling kernel, nodata. The
+  alternative's main gain is that they become arguments you can see, check and pin
+  ([chapter @sec-hidden]).
+- **It costs some boilerplate**, most of which `stacgrid` absorbs, a bigger install on disk,
+  and a few traps, which are written down ([chapter @sec-guidelines]).
+
+It is equivalent, not magic. What it buys is fewer layers, one GDAL across both languages,
+installs with nothing to compile, and a lockfile that records the exact libgdal build.
+
+## How this was tested
+
+Every number in this book comes from a run that starts from a bare `ubuntu:24.04` or `26.04`
+container, installs one stack, runs one job, and keeps the logs, timings, lockfiles and
+comparison output under
+[`evidence/`](https://github.com/mdsumner/geo-stack-alt/tree/main/evidence). Each run can be
+repeated with one command ([chapter @sec-reproduce]). Nothing here was measured on the author's
+own machine's GDAL, which is a development build.
+
+The comparisons are strict: the same job on two stacks, or the original code against a port,
+compared pixel by pixel. "Equal" means 0 differing pixels unless a count is given.
+
+## Who it's for
+
+Anyone setting up a geospatial stack for a team or a project, and anyone who has to keep a
+pipeline giving the same answer across upgrades. The bar is a newcomer with one page of
+instructions: do they end up with a stack that works and gives the same answer every time?
+It is not for experts who build GDAL themselves.
+
+## How to read it
+
+- [Part I](install.qmd) compares the install paths and explains why one libgdal matters.
+- [Part II](projects.qmd) ports four real projects, builds `stacgrid` for STAC loads, and
+  follows the fast-ice notebook to the pixel.
+- [Part III](versions.qmd) collects what moved pixels: version interactions and hidden
+  defaults.
+- [Part IV](guidelines.qmd) is the practical part: guidelines, a starting `pixi.toml`, how to
+  rerun everything, and the limits.
+
+GDAL behaviour found along the way is written up separately, with offline repros, in
+[osgeo-upstream](https://github.com/mdsumner/osgeo-upstream).

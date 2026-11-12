@@ -1,0 +1,22 @@
+# Limits and what's next {#sec-limits}
+
+## Limits
+
+- **One host.** Ubuntu 24.04 and 26.04, x86_64, a very fast network. Treat timings as a lower
+  bound. Not yet macOS, Windows, Nectar or Setonix (Setonix has no Docker, and its file-count
+  limits for conda/pixi envs are unchecked).
+- **Subsets.** Each project ran on a subset chosen to run in minutes (for example 7 of 249
+  bursts at 80 m inputs; one GA tutorial area). The code paths are the full ones.
+- **SAM and SVM** in fast-ice were not run (they need torch). The port stops at the SAM input.
+- **An expert wrote the ports.** They were written by someone who knows GDAL well and checked
+  against the originals. A newcomer would hit the traps in [chapter @sec-guidelines]; that's
+  what they're there for.
+- **One cause is inferred.** STACIT on GDAL 3.8.4 and DEA's `proj:code`-only items: the cause is
+  inferred from the items, not bisected.
+
+## Next
+
+- Explain the `terra::project` difference (same GDAL 3.8.4, different mean).
+- fast-ice SAM/SVM on the port's SAM input.
+- Run the project ports on Nectar, Setonix and a laptop, and check file-count quotas.
+- `r-ximage` on conda-forge, so the whole R side is in `pixi.lock`.

@@ -1,0 +1,42 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "A default geospatial stack, tested"
+  subtitle: "GDAL as the core, one libgdal, from binaries: clean-room evidence on real Sentinel work"
+  author: "Michael Sumner"
+  date: last-modified
+  repo-url: https://github.com/mdsumner/geo-stack-alt
+  repo-subdir: book
+  repo-actions: [edit, issue]
+  chapters:
+    - index.qmd
+    - part: "The stacks"
+      chapters:
+        - install.qmd
+        - one-gdal.qmd
+    - part: "Real work"
+      chapters:
+        - projects.qmd
+        - stac.qmd
+        - fast-ice.qmd
+    - part: "What moves the pixels"
+      chapters:
+        - versions.qmd
+        - hidden-choices.qmd
+    - part: "Using it"
+      chapters:
+        - guidelines.qmd
+        - reproduce.qmd
+        - limits.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    number-sections: true
+    code-copy: true
+
+execute:
+  enabled: false

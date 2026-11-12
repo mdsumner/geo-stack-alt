@@ -1,0 +1,119 @@
+# Installing a stack {#sec-install}
+
+Each install path (an "arm") starts from a bare `ubuntu:24.04` container, with no Python and no
+curl, and runs the same probe: a Copernicus 30 m DEM COG read over HTTPS, warped to a 40 km
+Australian Albers box at 40 m (bilinear), plus the versions, the drivers, and the shared
+libraries loaded in the process.
+
+## The default against pixi
+
+| | **A: venv + pip** | **B: pixi** |
+|---|---|---|
+| Install | apt python3-venv; `pip install rasterio numpy geopandas matplotlib` | apt curl; pixi; `pixi add python numpy gdal libgdal r-base r-gdalraster r-vapour r-wk`; ximage from CRAN |
+| Wall time (fast link) | ~45 s | ~30 s |
+| Disk | 555 MB (Python only) | 1.8 GB (Python **and** R) |
+| GDAL | 3.12.2 (rasterio), 3.12.4 (pyogrio) | 3.13.3 |
+| libgdal copies in one process | **2**, different versions (also 2 PROJ, 2 GEOS) | **1**, the same file for Python and R |
+| `osgeo.gdal` | not available: no wheel on PyPI; `pip install gdal` fails without `gdal-config` | yes, including `gdal.Run()` (the new CLI as an API) |
+| Drivers missing (of 21 checked) | Parquet, FlatGeobuf, OpenFileGDB, KEA, PostgreSQL, LIBKML | Parquet only; none with `libgdal-arrow-parquet` |
+| DEM warp mean | 558.9196 | 558.9198, identical across osgeo.gdal, gdalraster, vapour |
+
+Getting `osgeo.gdal` into arm A the hard way (apt `libgdal-dev g++ python3-dev`, then
+`pip install gdal==3.8.4`, then a `--no-build-isolation` rebuild to get `gdal_array`) took 82 s
+of apt alone and gave GDAL 3.8.4 with no `gdal.Run`.
+
+The warp means differ in the fourth decimal place. That isn't a difference between the
+bindings, it's a GDAL version change, and [chapter @sec-one-gdal] explains it.
+
+## Python only, like for like
+
+The same clean image, Python only. "Install" excludes the apt step, which varied from 16 s to
+124 s with mirror load.
+
+| | A: venv + pip | B-py core | B-py | B-py like-for-like |
+|---|---|---|---|---|
+| Packages | rasterio numpy geopandas matplotlib | python numpy gdal matplotlib-base | + libgdal | + libgdal rasterio geopandas |
+| Install | 22 s (venv + pip) | 5 s | 5 s | 7 s |
+| Env on disk | 534 MB | 626 MB | 934 MB | 1.19 GB |
+| Files in env | 9,296 | 14,147 | 23,173 | 31,657 |
+| Env + download cache | 677 MB | 770 MB | 1.21 GB | 1.50 GB |
+| GDAL drivers | 147 (rasterio) | 191 | 210 | 210 |
+| `osgeo.gdal` | no | yes | yes | yes |
+| libgdal copies in one process | 2 (3.12.2, 3.12.4) | 1 | 1 | **1**: rasterio and pyogrio both on 3.13.3 |
+
+- **On disk, pip is smaller:** 534 MB against 626 MB for core GDAL, or 934 MB with every plugin.
+  The pixi env has 1.5 to 2.5 times as many files, which matters under HPC file-count quotas.
+- **pixi is faster once apt is done**, because it downloads prebuilt packages in parallel and
+  hardlinks them from its cache.
+- **conda-forge also removes the duplicate GDAL for rasterio users.** In the like-for-like env,
+  rasterio 1.5.2 and pyogrio load the env's single libgdal 3.13.3. The duplicate comes from the
+  wheels, not from rasterio.
+
+## The R side
+
+A newcomer installs `sf terra gdalraster vapour wk ximage jsonlite` on a bare `ubuntu:24.04`
+with `install.packages()`, three ways, against the pixi env.
+
+| | CRAN source | Posit P3M binaries | r2u | pixi |
+|---|---|---|---|---|
+| Setup | `apt install r-base` (130-254 s, pulls compilers) | same, plus a repo URL and an `HTTPUserAgent` option | r2u script: CRAN apt repo, bspm (59 s) | pixi (shared with Python) |
+| First `install.packages()` | 87-253 s; **3 of 7 load**: sf, terra, gdalraster, vapour fail (no system libraries) | **3 of 7 load**: binaries install without error, then won't load (no libgdal etc.) | **7 of 7** in 36 s | 7 of 7 |
+| Fix | 8 `-dev` packages, then 535 s compiling: **6 of 7**. sf still fails: s2 needs Abseil (`libabsl-dev`) or cmake, which the usual list omits | 4 runtime libraries from apt, then 19 s: 7 of 7 | none | none |
+| R | 4.3.3 | 4.3.3 | 4.6.2 | 4.5.3 |
+| GDAL / PROJ / GEOS | 3.8.4 / 9.4.0 / 3.12.1 (Ubuntu) | same | same | 3.13.3 / 9.9.0 / 3.15.0 |
+| One libgdal for every package | yes | yes | yes | yes, **and shared with Python** |
+| DEM warp, gdalraster and vapour | 558.9196 | 558.9196 | 558.9196 | 558.9198 |
+| DEM warp, `terra::project` | 558.9181 | 558.9181 | 558.9181 | not run |
+
+- **On Linux, R already has the "one GDAL" property:** every package links the system libgdal.
+  R's problems are the setup cliff (two of three default paths fail first, silently in P3M's
+  case) and the **age** of Ubuntu's GDAL (3.8.4, released February 2024).
+- **r2u is the strongest R default on Ubuntu:** one script, then binaries for everything, with
+  system libraries pulled in by apt. It's limited to Ubuntu LTS and to the distro's GDAL.
+- **The source path's documented system requirements are out of date for sf**, because of s2
+  and Abseil. A newcomer following them ends up with no sf.
+- `terra::project` gives a different answer from `gdal.Warp`, gdalraster and vapour **on the same
+  GDAL** (mean 558.9181 against 558.9196; min and max agree). Not yet explained.
+
+## Everything from apt
+
+Add `python3-gdal` to r2u and Ubuntu alone gives a complete stack: Python and R load the
+distro's one libgdal, nothing compiles, and there is no venv.
+
+| | Ubuntu 24.04 | Ubuntu 26.04 | pixi, 26.04, for scale |
+|---|---|---|---|
+| GDAL / Python / R | 3.8.4 / 3.12 / 4.6.2 | 3.12.2 / 3.14.4 / 4.6.2 | 3.13.3 / 3.15.2 / 4.5.3 |
+| R packages that load | 7 of 7 | 7 of 7 | 7 of 7 |
+| Time / disk | apt + r2u + 3 R packages about 2.2 min | about 3.3 min, 591 MB in total | 1.8 GB env + 309 MB cache |
+| Drivers missing (of 21) | not probed | Parquet, KEA | Parquet |
+| DEM warp mean | 558.9196 | 558.9196 | 558.9198 |
+
+The warp mean follows the GDAL version, not the installer. The distro's GDAL turned out to be
+enough for all four real projects in [Part II](projects.qmd). Where it falls short is anything
+needing Parquet (DEA's STAC-GeoParquet indexes) and GDAL's STACIT driver, which on 3.8.4 can't
+read current DEA items.
+
+## Choosing GDAL plugins on conda-forge
+
+conda-forge's `gdal` package pulls in only `libgdal-core`, without netCDF, HDF5, JP2, KEA, PDF,
+PostgreSQL or Parquet. `libgdal` adds all but Parquet, which is separate because of Arrow.
+Python only, `matplotlib-base`, clean `ubuntu:24.04`:
+
+| GDAL packages | Env | Files | Drivers | Missing from the 21 checked |
+|---|---|---|---|---|
+| `gdal` (= libgdal-core) | 626 MB | 14k | 191 | netCDF, HDF5, Parquet, JP2, KEA, PDF, PostgreSQL |
+| `gdal libgdal-netcdf libgdal-hdf5 libgdal-jp2openjpeg libgdal-arrow-parquet` | 845 MB | 18k | 203 | KEA, PDF, PostgreSQL |
+| `gdal libgdal` | 934 MB | 23k | 210 | Parquet |
+| **`gdal libgdal libgdal-arrow-parquet`** | **1.02 GB** | **24k** | **212** | none |
+| pip: rasterio + geopandas wheels, for scale | 534 MB | 9k | 147 | Parquet, FlatGeobuf, OpenFileGDB, KEA, PostgreSQL, LIBKML |
+
+Most of the size is cloud SDKs (gRPC, Google Cloud, AWS, protobuf). TileDB and Arrow both pull
+them in, so the trimmed set saves only 170 MB. Default to all plugins; use the trimmed set when
+files or space are tight. The Parquet driver reads the ga-sar-ice EW STAC-GeoParquet index over
+HTTPS in under a second (190 scenes, 149 fields).
+
+Use `matplotlib-base`, not `matplotlib`: on conda-forge, `matplotlib` pulls in Qt6, PySide6,
+LLVM and Clang (about 150 MB compressed). With it the Python-only env was 1.7 GB and 36k files;
+without it, 934 MB.
+
+A starting `pixi.toml` is in [chapter @sec-guidelines].
